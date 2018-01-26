@@ -1,0 +1,106 @@
+#%RAML 1.0
+title: "0-metadata"
+description: "Generic metadata store"
+version: 0.0.1
+mediaType: application/json
+documentation:
+  - title: Extended documentation
+    content: https://github.com/Jumpscale/0-metadata/tree/master/docs
+
+
+# These types have been adapted from: https://github.com/zero-os/0-fs/blob/master/model.capnp
+types:
+  File:
+    properties:
+      content:
+        type: string
+  Link:
+    properties:
+      target:
+        type: string
+
+  Special:
+    properties:
+      type:
+        enum: [socket, block, chardev, fifopipe, unknown]
+      data:
+        type: string
+
+  SubDir:
+    properties:
+      key:
+        type: string
+
+  Inode:
+    properties:
+      name:
+        type: string
+      size:
+        type: integer
+      acl:
+        type: ACL
+      modified:
+        type: int
+        description: last modification time
+      created:
+        type: int
+        description: creation time
+      attributes:
+        type: File | Link | Special | SubDir
+
+  Dir:
+    properties:
+      name:
+        type: string
+      location:
+        type: string
+      contents:
+        type: Inode[]
+      parent:
+        type: string
+      size:
+        type: int
+      acl:
+        type: acl
+      modified:
+        type: int
+        description: last modification time
+      created:
+        type: int
+        description: creation time
+
+  UserGroup:
+    properties:
+      name:
+        type: string
+      iyoId:
+        type: string
+        description: itsyou.online id
+      iyoInt:
+        type: integer
+        description: itsyouonline unique id per user or group, is globally unique
+
+  Acl:
+    properties:
+      uname:
+        type: string
+      gname:
+        type: string
+      mode:
+        type: integer
+      rights:
+        type: Right[]
+      id:
+        type: integer
+
+  Right:
+    description: |
+      text e.g. rwdl- (admin read write delete list -), freely to be chosen
+      admin means all rights (e.g. on / = namespace or filesystem level all rights for everything)
+      - means remove all previous ones (is to stop recursion), if usergroupid=0 then is for all users & all groups
+    properties:
+      right:
+        type: string
+      userGroupId: integer
+
+
