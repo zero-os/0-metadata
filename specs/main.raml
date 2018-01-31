@@ -1,106 +1,216 @@
 #%RAML 1.0
-title: "0-metadata"
-description: "Generic metadata store"
+title: "meta DB"
+description: API of the meta DB, used to keep information on filesystem information
 version: 0.0.1
 mediaType: application/json
 documentation:
   - title: Extended documentation
-    content: https://github.com/Jumpscale/0-metadata/tree/master/docs
+content: 
 
-
-# These types have been adapted from: https://github.com/zero-os/0-fs/blob/master/model.capnp
 types:
-  File:
-    properties:
-      content:
-        type: string
-  Link:
-    properties:
-      target:
-        type: string
+    Node:
+        description: A node is the basic 
+        properties:
+            kind: # (dir, file, symlink)
+                type: int 
+            id: 
+                type: int64
+            parent: 
+                type: int64
+            name:
+                type: string
+            size:
+                type: int64
+            created:
+                type: timestamp
+            modified:
+                type: timestamp
+            accessed:
+                type: timestamp
+            location: ??? maybe the name/URL of the storage that keep info for this node
+                type: []byte
+            contents: ??? something that can reference an ID in an in/ex-ternal storage 
+                type: []byte
+            uname: ??? informative only 
+                type: string 
+            gname: ??? informative only
+                type: string 
+            rights: # (read, write/delete) No need of admin
+                type: int 
 
-  Special:
-    properties:
-      type:
-        enum: [socket, block, chardev, fifopipe, unknown]
-      data:
-        type: string
 
-  SubDir:
-    properties:
-      key:
-        type: string
+/contents/{path:*}/:
+  get:
+    displayName: contents
+        displayName: show_contents
+    responses:
+      200:
+        description: returns directory contents, files and dirs non recursive
+        body:
+                    application-json:
+                        example:
+                            response: {
+                                kind: filelist|content
+                                filelist: [
+                                    nodename, nodename, nodename ... # Don't know how to express a list
+                                ],
+                                contents: []byte
+                            }
+      404:
+        description: {path} does not exists
 
-  Inode:
-    properties:
-      name:
-        type: string
-      size:
-        type: integer
-      acl:
-        type: ACL
-      modified:
-        type: int
-        description: last modification time
-      created:
-        type: int
-        description: creation time
-      attributes:
-        type: File | Link | Special | SubDir
+/show/{path:*}/:
+  get:
+        description: returns metadata contents of object at {path} dir or file
+    displayName: show_metadata
+    responses:
+      200:
+        description: returns all metadata on of the directory
+        body:
+                    application-json:
+                        example:
+                            response: {
+                                kind: dir|file|symlink
+                                path: "/usr/share/doc"
+                                name: "manpages"
+                                size: 2340
+                                ....
+                            }
+      404:
+        description: path doesnt exists
 
-  Dir:
-    properties:
-      name:
-        type: string
-      location:
-        type: string
-      contents:
-        type: Inode[]
-      parent:
-        type: string
-      size:
-        type: int
-      acl:
-        type: acl
-      modified:
-        type: int
-        description: last modification time
-      created:
-        type: int
-        description: creation time
+/search/{path:*}/:
+  get:
+        description: Search for {aName} starting at {path}
+    displayName: dir_search
+        queryParameters:
+            aName: 
+                type: string
+                description: name of the object we want to search
+            recurse:
+                type: boolean
+                description: true or false if we want the search to be recursive
+    responses:
+      200:
+        description: object  {aName} exists
+                body:
+                    application-json: 
+                        example:
+                            response: {
+                                names: [ "/usr/bin/vim", "/usr/local/bin/vim"]
+                            }
+      404:
+        description: object {aName} not found
+            400:
+                description: {path} not a dir
 
-  UserGroup:
-    properties:
-      name:
-        type: string
-      iyoId:
-        type: string
-        description: itsyou.online id
-      iyoInt:
-        type: integer
-        description: itsyouonline unique id per user or group, is globally unique
+/create/{path:*}/:
+  post:
+    description: creates an object at {path} dir or file
+    displayName: object_create
+        queryParameters:
+            force: 
+                type: boolean 
+                description: forces the creation of intermediate parents
+    request:
+        application-json:
+            example:
+                request: {
+                    kind: dir
+                    rights:
+                    ...
+                }
+    responses:
+      200:
+        description: object created dir or file
+      404:
+        description: path doesn't exist, can't create object
 
-  Acl:
-    properties:
-      uname:
-        type: string
-      gname:
-        type: string
-      mode:
-        type: integer
-      rights:
-        type: Right[]
-      id:
-        type: integer
+/link/{path:*}
+    post:
+        description: create {Path} as a link of {path:*}
+        displayName: link
+        queryParameters:
+            Path:
+                type: string
+                description: path of linked object
+        responses:
+            200:
+                description: created {Path} link
+            404:
+                description: {path} or {Path} does not exists
+            400:
+                description: Incompatible {path} and {Path} types, 
 
-  Right:
-    description: |
-      text e.g. rwdl- (admin read write delete list -), freely to be chosen
-      admin means all rights (e.g. on / = namespace or filesystem level all rights for everything)
-      - means remove all previous ones (is to stop recursion), if usergroupid=0 then is for all users & all groups
-    properties:
-      right:
-        type: string
-      userGroupId: integer
+/copy/{path:*}
+    post:
+        description: Copy the contents of object at {path} into the object at {Path}
+        displayName: copy
+        queryParameters:
+            Path:
+                type: string 
+                description: Destination Path
+        responses:
+            200:
+                description: {Path} copied
+            404:
+                description: {path} or {Path} does not exists
+            400:
+                description: Incompatible {path} and {Path} types, 
 
+/move/{path:*}          
+    put:
+        description: Moves/renames the contents of {path} into {Path}
+        displayName: move
+        queryParameters:
+            Path:
+                type: string
+                description: New name of {path}
+        responses:
+            200:
+                description: directory moved
+            404:
+                description: {path} or {Path} does not exists
+            400:
+                description: Incompatible {path} and {Path} types, 
+
+/update/{path:*}
+    put:
+        description: updates the object at {path}
+        displayName: update
+        request:
+            application-json: 
+                example:
+                    request: {
+                        size:
+                        acl:
+                        ...
+                    }
+        responses:
+            200:
+                description: {path} updated
+            404:
+                description: {path} does not exists
+            
+/{path:*}
+    delete:
+        description: Deletes the object at {path},  if is a dir it must be empty
+        displayName: del
+        queryParameters:
+            force:
+                type: boolean
+                description: for non empty directories, the action is forced 
+        responses:
+            200:
+                description: {path] deleted
+                body: # Returns the metadata of the deleted directory
+                    application-json: 
+                        example:
+                            response: {
+                                name: "vim"
+                                size: 34000
+                                ....
+                            }
+            404:
+                description: {path} does not exists
 
