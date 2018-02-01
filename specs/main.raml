@@ -79,13 +79,15 @@ types:
         path: /belgium/flanders/berlare/Geert
 
 /api/v1/root/{path:*}:
+  displayName: tree
+  description: Tree based file and directory access & modification
   get:
     description: Download resource.
     displayName: get
     queryParameters:
       depth:
         type: integer
-        description: When listing directories, how deep to go
+        description: When listing directories, how deep to go. Specify -1 for unlimited.
         default: 1
       inspect:
         type: boolean
@@ -106,7 +108,7 @@ types:
         description: path not found
   post:
     description: Creating files or directories
-    displayName: Create
+    displayName: create
     body:
       binary/octet-stream:
         description: In case when creating file
@@ -124,7 +126,7 @@ types:
         description: Parent path not found
   put:
     description: Update directory settings or change file content
-    displayName: Update
+    displayName: update
     body:
       binary/octet-stream:
         description: case when updating a file
