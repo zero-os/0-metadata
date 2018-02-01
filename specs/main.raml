@@ -1,216 +1,155 @@
 #%RAML 1.0
-title: "meta DB"
-description: API of the meta DB, used to keep information on filesystem information
+title: "0-metadata"
+description: "Generic metadata store"
 version: 0.0.1
 mediaType: application/json
 documentation:
   - title: Extended documentation
-content: 
+    content: https://github.com/Jumpscale/0-metadata/tree/master/docs
 
 types:
-    Node:
-        description: A node is the basic 
-        properties:
-            kind: # (dir, file, symlink)
-                type: int 
-            id: 
-                type: int64
-            parent: 
-                type: int64
-            name:
-                type: string
-            size:
-                type: int64
-            created:
-                type: timestamp
-            modified:
-                type: timestamp
-            accessed:
-                type: timestamp
-            location: # ??? maybe the name/URL of the storage that keep info for this node
-                type: string
-            contents: # ??? something that can reference an ID in an in/ex-ternal storage 
-                type: string
-            uname: # ??? informative only 
-                type: string 
-            gname: # ??? informative only
-                type: string 
-            rights: # (read, write/delete) No need of admin
-                type: int 
+  CreateDirectory:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name for the directory to be created
+        required: false
 
+  Inode:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name for the file or directory entry
+        required: true
+      size:
+        type: integer
+        description: Size of the file. For directory entries this property will always be 0.
+        required: false
+      modified:
+        type: integer
+        description: |
+          Epoch of the last modification time.
+          - Files:
+            - Creation time (post)
+            - Or the last time the file content was set (put).
+          - Directories:
+            - Creation time (post)
+            - Or the last time the directory was changed (put).
+            - Or the last time an entry was added or removed
+        required: false
+      created:
+        type: integer
+        description: Epoch of the creation time
+        required: false
+      children:
+        type: Inode[]
+        description: |
+          - Files: Always null
+          - Directories: List of full or partial Inode objects
+          required: false
+      path:
+        type: string
+        description: Path of the Inode
+        required: false
+      type:
+        enum: [file, dir]
+        description: Inode type. "file" or "dir"
+        required: true
+    examples:
+      directory:
+        name: Geert
+        type: dir
+        size: 0
+        modified: 1517426795
+        created: 153689194
+        children:
+          - name: Lowie
+            type: file
+          - name: Arno
+            type: file
+        path: /belgium/flanders/berlare/Geert
+      file:
+        name: Geert
+        type: file
+        size: 193
+        modified: 1517426795
+        created: 153689194
+        path: /belgium/flanders/berlare/Geert
 
-/contents/{path:*}/:
-    displayName: contents   
-    get:
-        responses:
-        200:
-            description: returns directory contents, files and dirs non recursive
-            body:
-                application-json:
-                example:
-                    response: 
-                    {
-                        kind: filelist|content
-                        filelist: [
-                            nodename, nodename, nodename ... # Don't know how to express a list
-                        ],
-                        contents: []byte
-                    }
-        404:
-            description: {path} does not exists
-
-/show/{path:*}/:
-    description: returns metadata contents of object at {path} dir or file
-    displayName: show_metadata
-    get:
-        responses:
-            200:
-            description: returns all metadata on of the directory
-            body:
-                application-json:
-                    example:
-                        response: {
-                            kind: dir|file|symlink
-                            path: "/usr/share/doc"
-                            name: "manpages"
-                            size: 2340
-                            ....
-                        }
-            404:
-                description: path doesnt exists
-
-/search/{path:*}/:
-    description: Search for {aName} starting at {path}
-    displayName: dir_search
-    get:
-        queryParameters:
-            aName: 
-                type: string
-                description: name of the object we want to search
-            recurse:
-                type: boolean
-                description: true or false if we want the search to be recursive
+/api/v1/root/{path:*}:
+  get:
+    description: Download resource.
+    displayName: get
+    queryParameters:
+      depth:
+        type: integer
+        description: When listing directories, how deep to go
+        default: 1
+      inspect:
+        type: boolean
+        description: |
+          If true and path points to a file, return the metadata only of the file
+          otherwise return the content of the file as binary stream.
+          This parameter is ignored when the path points to a resource.
+        default: false
     responses:
-        200:
-            description: object  {aName} exists
-                body:
-                    application-json: 
-                        example:
-                            response: {
-                                names: [ "/usr/bin/vim", "/usr/local/bin/vim"]
-                            }
-        404:
-            description: object {aName} not found
-        400:
-            description: {path} not a dir
-
-/create/{path:*}/:
-    description: creates an object at {path} dir or file
-    displayName: object_create
-    post:
-        queryParameters:
-            force: 
-                type: boolean 
-                description: forces the creation of intermediate parents
-        request:
-            application-json:
-                example:
-                    request: {
-                        kind: dir
-                        rights:
-                        ...
-                    }
-        responses:
-            200:
-                description: object created dir or file
-            404:
-                description: path doesn't exist, can't create object
-
-/link/{path:*}
-    description: create {Path} as a link of {path:*}
-    displayName: link
-    post:
-        queryParameters:
-            Path:
-                type: string
-                description: path of linked object
-        responses:
-            200:
-                description: created {Path} link
-            404:
-                description: {path} or {Path} does not exists
-            400:
-                description: Incompatible {path} and {Path} types, 
-
-/copy/{path:*}
-    description: Copy the contents of object at {path} into the object at {Path}
-    displayName: copy
-    post:
-        queryParameters:
-            Path:
-                type: string 
-                description: Destination Path
-        responses:
-            200:
-                description: {Path} copied
-            404:
-                description: {path} or {Path} does not exists
-            400:
-                description: Incompatible {path} and {Path} types, 
-
-/move/{path:*}          
-    description: Moves/renames the contents of {path} into {Path}
-    displayName: move
-    put:
-        queryParameters:
-            Path:
-                type: string
-                description: New name of {path}
-        responses:
-            200:
-                description: directory moved
-            404:
-                description: {path} or {Path} does not exists
-            400:
-                description: Incompatible {path} and {Path} types, 
-
-/update/{path:*}
-    description: updates the object at {path}
-    displayName: update
-    put:
-        request:
-            application-json: 
-                example:
-                    request: {
-                        size:
-                        acl:
-                        ...
-                    }
-        responses:
-            200:
-                description: {path} updated
-            404:
-                description: {path} does not exists
-            
-/{path:*}
-    description: Deletes the object at {path},  if is a dir it must be empty
-    displayName: del
-    delete:
-        queryParameters:
-            force:
-                type: boolean
-                description: for non empty directories, the action is forced 
-        responses:
-            200:
-                description: {path] deleted
-                body: # Returns the metadata of the deleted directory
-                    application-json: 
-                        example:
-                            response: {
-                                name: "vim"
-                                size: 34000
-                                ....
-                            }
-            404:
-                description: {path} does not exists
-
+      200:
+        body:
+          binary/octet-stream:
+            description: when query parameter inspect is false
+          application/json:
+            description: when query parameter inspect is true
+            type: Inode
+      404:
+        description: path not found
+  post:
+    description: Creating files or directories
+    displayName: Create
+    body:
+      binary/octet-stream:
+        description: In case when creating file
+      application/json:
+        type: CreateDirectory
+        description: In case you create a directory
+    responses:
+      200:
+        description: Inode meta data of the newly added entry
+        body:
+          type: Inode
+      409:
+        description: Path already exists
+      404:
+        description: Parent path not found
+  put:
+    description: Update directory settings or change file content
+    displayName: Update
+    body:
+      binary/octet-stream:
+        description: case when updating a file
+      application/json:
+        type: CreateDirectory
+        description: in case you update a directory
+    responses:
+      200:
+        body:
+          type: Inode meta data of the updated entry
+      404:
+        description: Path not found
+  delete:
+    description: Removing files or directories
+    displayName: delete
+    queryParameters:
+      recursive:
+        description: |
+          In case path points to a directory that has child entries, the directory will be removed along with all its children.
+          In case path points to a file, this parameter will be ignored.
+        type: boolean
+    responses:
+      204:
+        description: Node deleted
+      400:
+        description: Path has children and recursive is false
+      404:
+        description: Path not found
