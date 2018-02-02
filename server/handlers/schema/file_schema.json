@@ -1,0 +1,31 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"blockSize": {
+			"type": "integer"
+		},
+		"blocks": {
+			"type": "string"
+		},
+		"moddate": {
+			"type": "integer"
+		},
+		"name": {
+			"type": "string"
+		},
+		"posix": {
+			"type": "string"
+		},
+		"size": {
+			"type": "integer"
+		}
+	},
+	"required": [
+		"blockSize",
+		"blocks",
+		"moddate",
+		"name",
+		"size"
+	]
+}

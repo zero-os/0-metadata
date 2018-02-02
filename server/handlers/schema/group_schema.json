@@ -1,0 +1,32 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"addr": {
+			"type": "string"
+		},
+		"alias": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"keyPub": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"owners": {
+			"type": "integer"
+		},
+		"uid": {
+			"type": "integer"
+		}
+	},
+	"required": [
+		"alias",
+		"owners",
+		"uid"
+	]
+}

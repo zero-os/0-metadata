@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"category": {
+			"type": "string"
+		},
+		"data": {
+			"type": "string"
+		},
+		"moddate": {
+			"type": "integer"
+		},
+		"name": {
+			"type": "string"
+		}
+	},
+	"required": [
+		"data",
+		"moddate",
+		"name"
+	]
+}

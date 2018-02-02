@@ -1,0 +1,23 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"aci": {
+			"type": "array",
+			"items": {
+				"$ref": "aci_schema.json"
+			}
+		},
+		"hash": {
+			"type": "string"
+		},
+		"uid": {
+			"type": "integer"
+		}
+	},
+	"required": [
+		"aci",
+		"hash",
+		"uid"
+	]
+}

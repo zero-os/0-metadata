@@ -1,0 +1,655 @@
+#%RAML 1.0
+title: User/Group example api
+version: 0.8.0
+baseUri: 'http://127.0.0.1:5000/'
+mediaType: application/json
+protocols:
+  - HTTPS
+
+types:
+  
+  
+  
+  
+  #should only be subset of
+  fileblock:
+    properties:
+      hash:
+        required: false
+        description: File hash stored as key on the backend (of the block)
+        type: string
+      zstormetadata:
+        required: false
+        description: metadata of zstor
+        type: string
+      key:
+        required: false
+        description: Encryption key (is optional, if not given then not encrypted)
+        type: string
+  
+  file:
+    properties:
+      name:
+        required: true
+        description: name of this object
+        type: string
+      size:
+        required: true
+        description: size in bytes of full file
+        type: number
+        format: int32
+      moddate:
+        required: true
+        description: epoch
+        type: number
+        format: int32
+      blockSize:
+        required: true
+        description: int16 for size in 4kbytes, is same for all parts of file (apart from last one)
+        type: number
+        format: int16
+      blocks:
+        required: true
+        description: list of the parts of the file
+        types: fileblock[]
+      posix:
+        required: false
+        description: posix object if storing files and used for filesystem
+        types: Posix
+  
+  special:
+    properties:
+      name:
+        required: true
+        description: name of this object
+        type: string
+      type:
+        required: true
+        description: |
+          type of the special object
+            0 => socket       (S_IFSOCK)
+            1 => block device (S_IFBLK)
+            2 => char. device (S_IFCHR)
+            3 => fifo pipe    (S_IFIFO)
+        enum: [ socket, block, char, fifo ]
+      data:
+        required: false
+        description: data relevant for type of item
+        type: string
+      moddate:
+        required: true
+        description: epoch
+        type: number
+        format: int32
+  link:
+    properties:
+      name:
+        required: true
+        description: name of this object
+        type: string
+      destdir:
+        required: true
+        description: id to directory where link points too
+        type: number
+        format: int32
+      destname:
+        required: true
+        description: name of the file or other item in the directory
+        type: number
+        format: int32
+      type:
+        required: true
+        description: "type of destination object, only these supported"
+        enum: [ file, dir, meta ]
+      moddate:
+        required: true
+        description: epoch
+        type: number
+        format: int32
+  
+  
+  link_bobject:
+    properties:
+      bdomain:
+        required: true
+        description: domain id of the blockchain
+        type: number
+        format: int32
+      buid:
+        required: true
+        description: unique id inside the blockchain domain
+        type: number
+        format: int32
+      name:
+        required: true
+        description: name of this bobject, to show in dir
+        type: string
+      secret:
+        required: false
+        description: can be used to allow user to fetch the object without authentication
+        type: string
+      moddate:
+        required: true
+        description: epoch
+        type: number
+        format: int32
+  
+  
+  metadata:
+    properties:
+      name:
+        required: true
+        description: name of this bobject, to show in dir
+        type: string
+      data:
+        required: true
+        description: metadata of zstor
+        type: string
+      category:
+        required: false
+        description: "category of the metadata, optional"
+        type: string
+      moddate:
+        required: true
+        description: epoch
+        type: number
+        format: int32
+  
+  
+  dir:
+    properties:
+      uid:
+        required: true
+        description: increment id for this directory (unique id)
+        type: number
+        format: int32
+      uid_parent:
+        required: true
+        description: link to parent of this object
+        type: number
+        format: int32
+      secret:
+        required: true
+        description: secret, can be used to give someone access to info of full dir obj
+        type: string
+      name:
+        required: true
+        description: name of this object
+        type: string
+      size:
+        required: true
+        description: size in bytes of full dir (calculated when mod done on any of sub obj)
+        type: number
+        format: int32
+      files:
+        required: true
+        description: list of the file objects
+        type: file[]
+      special_items:
+        required: true
+        description: list of the special objects
+        type: special[]
+      link_items:
+        required: true
+        description: list of the special objects
+        type: link[]
+      metadata_items:
+        required: true
+        description: list of the metadata objects
+        type: metadata[]
+      bobject_items:
+        required: true
+        description: list of the blockchain objects
+        type: link_bobject[]
+      subdirs:
+        required: true
+        description: link to other dir's which are under this dir, destname prop not used, can use Link obj for this
+        type: link[]
+      posix:
+        required: false
+        description: posix object if storing files and used for filesystem
+        type: posix
+      acl:
+        required: true
+        description: link to acl object to allow someone access or not
+        type: number
+        format: int32
+  
+  
+  #only used for dirs & files, if other items underneith dir inherit from dir
+  posix:
+    properties:
+      mode:
+        required: false
+        description: posix mode
+        type: number
+        format: int16
+      uname:
+        required: true
+        description: posix uname
+        type: string
+      gname:
+        required: true
+        description: posix gname (group)
+        type: string
+  
+  
+  
+  # for capnp see Users/kristofdespiegeleer/code/github/jumpscale/core9/JumpScale9/data/blockchain/schemas, need to generate
+  bdomain:
+    description: blockchain domain
+    properties:
+      id:
+        required: true
+        description: is increment id for any domain in a blockchain, is stored in itself in bdomain 1 (always)
+        type: number
+        format: int32
+      uid:
+        required: true
+        description: is unique id which stays the same even after mods
+        type: number
+        format: int32
+      moddate:
+        required: true
+        description: last modification date
+        type: number
+        format: int32
+      author:
+        required: true
+        description: id of author who created this bobject
+        type: number
+        format: int32
+      name:
+        required: true
+        description: name of the domain, needs to be unique
+        type: string
+      description:
+        required: false
+        description: freely to be given description by owner of the domain
+        type: string
+      admins:
+        required: true
+        description: list of owners which are people who administer this domain
+        type: number[]
+        format: int32
+      addr:
+        required: false
+        description: is the address given by the digital.me system, is for the master of this blockchain
+        type: string
+      signature:
+        required: true
+        description: signature with priv key of author of md5(id+moddate+author+name+signature+owners(sorted)+addr+signature previous message)
+        type: string
+  
+  bobject:
+    description: blockchain object
+    properties:
+      id:
+        required: true
+        description: is incremental id for any object in a blockchain, unique for all changes
+        type: number
+        format: int32
+      uid:
+        required: false
+        description: is unique id which stays the same even after mods, there needs to be lookup table
+        type: number
+        format: int32
+      key:
+        required: true
+        description: secret or key, can be used to give someone access to data of this obj, max 32 bytes
+        type: string
+      domain:
+        required: true
+        description: is unique id for the domain in which this bobject lives e.g. user.system
+        type: number
+        format: int32
+      moddate:
+        required: true
+        description: last modification date
+        type: number
+        format: int32
+      author:
+        required: true
+        description: id of author who created this bobject
+        type: number
+        format: int32
+      data:
+        required: true
+        description: the capnp data
+        type: string
+      signature:
+        required: true
+        description: signature with priv key of author of md5(id+domain+moddate+author+data+signature+signature previous message)
+        type: string
+      compressionType:
+        required: false
+        description: is the compression type of the message, if not specified then non compressed
+        enum: [ none, blosc, snappy ]
+      digitalmeUrl:
+        required: false
+        description: digital me url
+        type: string
+    example:
+      id: 10
+      name: "Rabbit From Egypt"
+      digitalmeUrl: "rabbit.luxor.egypt"
+      alias:
+      - "rabbit"
+      - "gouny1"
+      compressionType: "blosc"
+      addr: "192.168.1.1"
+  
+  #stored on bobj
+  user:
+    properties:
+      uid:
+        required: true
+        description: is unique id for a user, increments
+        type: number
+        format: int32
+      alias:
+        required: true
+        description: chosen name(s), does not have to be unique, public readable, only relevant in all groups you are part off.
+        type: string[]
+      keyPub:
+        required: false
+        description: public key which is used for validation & encryption
+        type: string[]
+      addr:
+        required: false
+        description: is the address given by the digital.me system, is unique per user & can change
+        type: string
+  
+    example:
+      id: 10
+      addr: "rabbit.luxor.egypt"
+      alias:
+      - "rabbit"
+      - "gouny1"
+  
+  #stored on bobj
+  group:
+    properties:
+      uid:
+        required: true
+        description: is unique id for a group, increments
+        type: number
+        format: int32
+      alias:
+        required: true
+        description: chosen name(s), does not have to be unique, public readable, only relevant in all parent groups
+        type: string[]
+      owners:
+        required: true
+        description: list of owners which are people who administer this group and can add/remove users
+        type: number[]
+        format: int32
+      keyPub:
+        required: false
+        description: public key which is used for validation & encryption
+        type: string[]
+      addr:
+        required: false
+        description: is the address given by the digital.me system, is unique per group & can change
+        type: string
+    example:
+      id: 10
+      addr: "rabbitgroup.luxor.egypt"
+      owners: [1,2]
+      alias:
+      - "gig.engineering"
+  
+  acl:
+    properties:
+      uid:
+        required: true
+        description: is unique id for the acl, increments
+        type: number
+        format: int32
+      aci:
+        required: true
+        description: list of access control items
+        type: aci[]
+      hash:
+        required: true
+        description: md5 hash of concatenation of ACI hashes, used to find this acl to avoid duplicates
+        type: text
+  
+  aci:
+    properties:
+      uid:
+        required: true
+        description: is unique id for the acl, increments
+        type: number
+        format: int32
+      groups:
+        required: false
+        description: link to group(s)
+        type: number[]
+        format: int32
+      users:
+        required: false
+        description: link to user(s)
+        type: number[]
+        format: int32
+      right:
+        required: true
+        description: |
+          text e.g. rwdl- (admin read write delete list -), freely to be chosen
+          admin means all rights (e.g. on / = namespace or filesystem level all rights for everything)
+          '-' means remove all previous ones (is to stop recursion), if group=0,user=0 then is for all users & all groups
+        type: string
+      hash:
+        required: true
+        description: md5 hash of id+sorted_groups+sorted_users+right, used to make sure we only link acl once
+        type: string
+  
+  
+  acl:
+    type: object
+    properties:
+      uid:
+        required: true
+        description: is unique id for the acl, increments
+        type: number
+        format: int32
+      aci:
+        required: true
+        description: list of access control items
+        type: aci[]
+      hash:
+        required: true
+        description: md5 hash of concatenation of ACI hashes, used to find this acl to avoid duplicates
+        type: string
+  
+  aci:
+    type: object
+    properties:
+      uid:
+        required: true
+        description: is unique id for the acl, increments
+        type: number
+        format: int32
+      groups:
+        required: false
+        description: link to group(s)
+        type: number[]
+        format: int32
+      users:
+        required: false
+        description: link to user(s)
+        type: number[]
+        format: int32
+      right:
+        required: true
+        description: |
+          text e.g. rwdl- (admin read write delete list -), freely to be chosen
+          admin means all rights (e.g. on / = namespace or filesystem level all rights for everything)
+          '-' means remove all previous ones (is to stop recursion), if group=0,user=0 then is for all users & all groups
+        type: string
+      hash:
+        required: true
+        description: md5 hash of id+sorted_groups+sorted_users+right, used to make sure we only link acl once
+        type: string
+resourceTypes:  
+                
+                std_id:
+                  displayName: '{id}'
+                  uriParameters:
+                    id:
+                      description: Object identifier
+                      type: string
+                      displayName: Object identifier
+                
+                std_id_post:
+                  displayName: '{id}'
+                  uriParameters:
+                    id:
+                      description: Object identifier
+                      type: string
+                      displayName: Object identifier
+                  post:
+                    is: [stdresponse]
+                    displayName: update<<resourcePathName | !singularize | !uppercamelcase>>
+                    description: Update <<resourcePathName | !singularize>> configuration
+                    body:
+                      application/json:
+                        type: <<resourcePathName | !singularize >>
+                
+                std_id_get_post:
+                  displayName: '{id}'
+                  uriParameters:
+                    id:
+                      description: Object identifier <<descr>>
+                      type: string
+                      displayName: Object identifier
+                
+                  get:
+                    is: [stdresponse,authfailure]
+                    displayName: get<<resourcePathName | !singularize | !uppercamelcase>>
+                    description: Get <<resourcePathName | !singularize>>, <<descr>>
+                
+                  post:
+                    is: [stdresponse,authfailure]
+                    displayName: update<<resourcePathName | !singularize | !uppercamelcase>>
+                    description: Update <<resourcePathName | !singularize>>
+                    body:
+                      application/json:
+                        type: <<resourcePathName | !singularize >>
+                
+                std_id_get_post_del:
+                  displayName: '{id}'
+                  uriParameters:
+                    id:
+                      description: <<descr>>
+                      type: string
+                
+                  get:
+                    is: [stdresponse,authfailure]
+                    displayName: get<<resourcePathName | !singularize | !uppercamelcase>>
+                    description: Get <<resourcePathName | !singularize>>, <<descr>>
+                
+                  post:
+                    is: [stdresponse,authfailure]
+                    displayName: update<<resourcePathName | !singularize | !uppercamelcase>>
+                    description: Update <<resourcePathName | !singularize>>
+                    body:
+                      application/json:
+                        type: <<resourcePathName | !singularize >>
+                
+                  delete:
+                    is: [stdresponse,authfailure]
+                    displayName: delete<<resourcePathName | !singularize | !uppercamelcase>>
+                    description: Delete <<resourcePathName | !singularize>>
+                    body: {}
+                    responses:
+                      '200':
+                        # body:
+                          # application/json:
+                          #    type: <<resourcePathName | !singularize | !uppercamelcase>>DeleteStatus
+                        description: <<resourcePathName | !singularize | !uppercamelcase >> deleted
+                
+                std_root_list:
+                  get:
+                    displayName: list<<resourcePathName | !singularize | !uppercamelcase >>
+                    is: [listresponse,authfailure]
+                
+                std_root_get:
+                  get:
+                    displayName: get<<resourcePathName | !singularize | !uppercamelcase >>
+                    is: [stdresponse]
+                
+                std_root_get_id:
+                  displayName: '{id}'
+                  uriParameters:
+                    id:
+                      description: <<descr>>
+                      type: string
+                      displayName: Object identifier
+                
+                  get:
+                    is: [listresponse,authfailure]
+traits: 
+        #%RAML 1.0 traits
+        
+        stdresponse:
+          responses:
+            '200':
+              body:
+                application/json:
+                  type: <<resourcePathName | !singularize>>
+        
+        stdresponsetype:
+          responses:
+            '200':
+              body:
+                application/json:
+                  type: <<ttype>>
+        
+        authfailure:
+          responses:
+            '403':
+              body:
+                text/plain:
+                  type: string
+              description: Authentication failure or  <<resourcePathName | !singularize | !lowercase >> not viewable
+        
+        listresponse:
+            displayName:  list<<resourcePathName | !pluralize  | !uppercamelcase >>
+            description: Get a list of <<resourcePathName | !pluralize  | !lowercase >>
+            responses:
+              '200':
+                body:
+                  application/json:
+                    type: <<resourcePathName | !singularize>>[]
+                description: Array of <<resourcePathName | !singularize | !uppercamelcase>> objects
+
+/user:
+  type: {std_root_list}
+  '/{id}':
+    type: {std_id_get_post_del: {descr: id=int} }
+
+/group:
+  type: {std_root_list}
+  '/{id}':
+    type: {std_id_get_post_del: {descr: id=int} }
+
+/bobject:
+  type: {std_root_list}
+  '/{id}':
+    type: {std_id_get_post_del: {descr: id=int} }
+
+/bdomain:
+  type: {std_root_list}
+  '/{id}':
+    type: {std_id_get_post_del: {descr: id=int} }
+
+/acl:
+  type: {std_root_list}
+  '/{id}':
+    type: {std_id_get_post_del: {descr: id=int} }
+
+/dir:
+  type: {std_root_list}
+  '/{id}':
+    type: {std_id_get_post_del: {descr: id=int} }

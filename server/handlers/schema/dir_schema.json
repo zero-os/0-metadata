@@ -1,0 +1,77 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"acl": {
+			"type": "integer"
+		},
+		"bobject_items": {
+			"type": "array",
+			"items": {
+				"$ref": "link_bobject_schema.json"
+			}
+		},
+		"files": {
+			"type": "array",
+			"items": {
+				"type": "file"
+			}
+		},
+		"link_items": {
+			"type": "array",
+			"items": {
+				"$ref": "link_schema.json"
+			}
+		},
+		"metadata_items": {
+			"type": "array",
+			"items": {
+				"$ref": "metadata_schema.json"
+			}
+		},
+		"name": {
+			"type": "string"
+		},
+		"posix": {
+			"$ref": "posix_schema.json"
+		},
+		"secret": {
+			"type": "string"
+		},
+		"size": {
+			"type": "integer"
+		},
+		"special_items": {
+			"type": "array",
+			"items": {
+				"$ref": "special_schema.json"
+			}
+		},
+		"subdirs": {
+			"type": "array",
+			"items": {
+				"$ref": "link_schema.json"
+			}
+		},
+		"uid": {
+			"type": "integer"
+		},
+		"uid_parent": {
+			"type": "integer"
+		}
+	},
+	"required": [
+		"acl",
+		"bobject_items",
+		"files",
+		"link_items",
+		"metadata_items",
+		"name",
+		"secret",
+		"size",
+		"special_items",
+		"subdirs",
+		"uid",
+		"uid_parent"
+	]
+}

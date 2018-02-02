@@ -1,0 +1,50 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"author": {
+			"type": "integer"
+		},
+		"compressionType": {
+			"type": "string",
+			"enum": [
+				"none",
+				"blosc",
+				"snappy"
+			]
+		},
+		"data": {
+			"type": "string"
+		},
+		"digitalmeUrl": {
+			"type": "string"
+		},
+		"domain": {
+			"type": "integer"
+		},
+		"id": {
+			"type": "integer"
+		},
+		"key": {
+			"type": "string"
+		},
+		"moddate": {
+			"type": "integer"
+		},
+		"signature": {
+			"type": "string"
+		},
+		"uid": {
+			"type": "integer"
+		}
+	},
+	"required": [
+		"author",
+		"data",
+		"domain",
+		"id",
+		"key",
+		"moddate",
+		"signature"
+	]
+}

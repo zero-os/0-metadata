@@ -1,0 +1,33 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"destdir": {
+			"type": "integer"
+		},
+		"destname": {
+			"type": "integer"
+		},
+		"moddate": {
+			"type": "integer"
+		},
+		"name": {
+			"type": "string"
+		},
+		"type": {
+			"type": "string",
+			"enum": [
+				"file",
+				"dir",
+				"meta"
+			]
+		}
+	},
+	"required": [
+		"destdir",
+		"destname",
+		"moddate",
+		"name",
+		"type"
+	]
+}

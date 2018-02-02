@@ -1,0 +1,225 @@
+
+
+
+#should only be subset of
+fileblock:
+  properties:
+    hash:
+      required: false
+      description: File hash stored as key on the backend (of the block)
+      type: string
+    zstormetadata:
+      required: false
+      description: metadata of zstor
+      type: string
+    key:
+      required: false
+      description: Encryption key (is optional, if not given then not encrypted)
+      type: string
+
+file:
+  properties:
+    name:
+      required: true
+      description: name of this object
+      type: string
+    size:
+      required: true
+      description: size in bytes of full file
+      type: number
+      format: int32
+    moddate:
+      required: true
+      description: epoch
+      type: number
+      format: int32
+    blockSize:
+      required: true
+      description: int16 for size in 4kbytes, is same for all parts of file (apart from last one)
+      type: number
+      format: int16
+    blocks:
+      required: true
+      description: list of the parts of the file
+      types: fileblock[]
+    posix:
+      required: false
+      description: posix object if storing files and used for filesystem
+      types: Posix
+
+special:
+  properties:
+    name:
+      required: true
+      description: name of this object
+      type: string
+    type:
+      required: true
+      description: |
+        type of the special object
+          0 => socket       (S_IFSOCK)
+          1 => block device (S_IFBLK)
+          2 => char. device (S_IFCHR)
+          3 => fifo pipe    (S_IFIFO)
+      enum: [ socket, block, char, fifo ]
+    data:
+      required: false
+      description: data relevant for type of item
+      type: string
+    moddate:
+      required: true
+      description: epoch
+      type: number
+      format: int32
+link:
+  properties:
+    name:
+      required: true
+      description: name of this object
+      type: string
+    destdir:
+      required: true
+      description: id to directory where link points too
+      type: number
+      format: int32
+    destname:
+      required: true
+      description: name of the file or other item in the directory
+      type: number
+      format: int32
+    type:
+      required: true
+      description: "type of destination object, only these supported"
+      enum: [ file, dir, meta ]
+    moddate:
+      required: true
+      description: epoch
+      type: number
+      format: int32
+
+
+link_bobject:
+  properties:
+    bdomain:
+      required: true
+      description: domain id of the blockchain
+      type: number
+      format: int32
+    buid:
+      required: true
+      description: unique id inside the blockchain domain
+      type: number
+      format: int32
+    name:
+      required: true
+      description: name of this bobject, to show in dir
+      type: string
+    secret:
+      required: false
+      description: can be used to allow user to fetch the object without authentication
+      type: string
+    moddate:
+      required: true
+      description: epoch
+      type: number
+      format: int32
+
+
+metadata:
+  properties:
+    name:
+      required: true
+      description: name of this bobject, to show in dir
+      type: string
+    data:
+      required: true
+      description: metadata of zstor
+      type: string
+    category:
+      required: false
+      description: "category of the metadata, optional"
+      type: string
+    moddate:
+      required: true
+      description: epoch
+      type: number
+      format: int32
+
+
+dir:
+  properties:
+    uid:
+      required: true
+      description: increment id for this directory (unique id)
+      type: number
+      format: int32
+    uid_parent:
+      required: true
+      description: link to parent of this object
+      type: number
+      format: int32
+    secret:
+      required: true
+      description: secret, can be used to give someone access to info of full dir obj
+      type: string
+    name:
+      required: true
+      description: name of this object
+      type: string
+    size:
+      required: true
+      description: size in bytes of full dir (calculated when mod done on any of sub obj)
+      type: number
+      format: int32
+    files:
+      required: true
+      description: list of the file objects
+      type: file[]
+    special_items:
+      required: true
+      description: list of the special objects
+      type: special[]
+    link_items:
+      required: true
+      description: list of the special objects
+      type: link[]
+    metadata_items:
+      required: true
+      description: list of the metadata objects
+      type: metadata[]
+    bobject_items:
+      required: true
+      description: list of the blockchain objects
+      type: link_bobject[]
+    subdirs:
+      required: true
+      description: link to other dir's which are under this dir, destname prop not used, can use Link obj for this
+      type: link[]
+    posix:
+      required: false
+      description: posix object if storing files and used for filesystem
+      type: posix
+    acl:
+      required: true
+      description: link to acl object to allow someone access or not
+      type: number
+      format: int32
+
+
+#only used for dirs & files, if other items underneith dir inherit from dir
+posix:
+  properties:
+    mode:
+      required: false
+      description: posix mode
+      type: number
+      format: int16
+    uname:
+      required: true
+      description: posix uname
+      type: string
+    gname:
+      required: true
+      description: posix gname (group)
+      type: string
+

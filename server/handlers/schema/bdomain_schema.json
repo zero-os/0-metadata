@@ -1,0 +1,42 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"type": "object",
+	"properties": {
+		"addr": {
+			"type": "string"
+		},
+		"admins": {
+			"type": "integer"
+		},
+		"author": {
+			"type": "integer"
+		},
+		"description": {
+			"type": "string"
+		},
+		"id": {
+			"type": "integer"
+		},
+		"moddate": {
+			"type": "integer"
+		},
+		"name": {
+			"type": "string"
+		},
+		"signature": {
+			"type": "string"
+		},
+		"uid": {
+			"type": "integer"
+		}
+	},
+	"required": [
+		"admins",
+		"author",
+		"id",
+		"moddate",
+		"name",
+		"signature",
+		"uid"
+	]
+}
