@@ -17,8 +17,9 @@ class UserService:
         resp = self.client.delete(uri, None, headers, query_params, content_type)
         try:
             if resp.status_code == 200:
-                return user(resp.json()), resp
-
+                return user(resp.json()), resp 
+                # return None, resp  # Must be none as a delete should not return any record
+        
             message = 'unknown status code={}'.format(resp.status_code)
             raise UnhandledAPIError(response=resp, code=resp.status_code,
                                     message=message)
