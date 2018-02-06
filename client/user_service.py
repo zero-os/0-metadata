@@ -14,21 +14,7 @@ class UserService:
         It is method for DELETE /user/{id}
         """
         uri = self.client.base_url + "/user/" + id
-        resp = self.client.delete(uri, None, headers, query_params, content_type)
-        try:
-            if resp.status_code == 200:
-                return user(resp.json()), resp 
-                # return None, resp  # Must be none as a delete should not return any record
-        
-            message = 'unknown status code={}'.format(resp.status_code)
-            raise UnhandledAPIError(response=resp, code=resp.status_code,
-                                    message=message)
-        except ValueError as msg:
-            raise UnmarshallError(resp, msg)
-        except UnhandledAPIError as uae:
-            raise uae
-        except Exception as e:
-            raise UnmarshallError(resp, e.message)
+        return self.client.delete(uri, None, headers, query_params, content_type)
 
     def getUser(self, id, headers=None, query_params=None, content_type="application/json"):
         """
