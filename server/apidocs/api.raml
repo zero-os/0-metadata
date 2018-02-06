@@ -550,7 +550,7 @@ resourceTypes:
                     description: Get <<resourcePathName | !singularize>>, <<descr>>
                 
                   post:
-                    is: [stdresponse,authfailure]
+                    is: [stdpostresponse,authfailure]
                     displayName: update<<resourcePathName | !singularize | !uppercamelcase>>
                     description: Update <<resourcePathName | !singularize>>
                     body:
