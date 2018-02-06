@@ -550,7 +550,7 @@ resourceTypes:
                     description: Get <<resourcePathName | !singularize>>, <<descr>>
                 
                   post:
-                    is: [stdresponse,authfailure]
+                    is: [stdpostresponse,authfailure]
                     displayName: update<<resourcePathName | !singularize | !uppercamelcase>>
                     description: Update <<resourcePathName | !singularize>>
                     body:
@@ -558,14 +558,9 @@ resourceTypes:
                         type: <<resourcePathName | !singularize >>
                 
                   delete:
-                    is: [authfailure]
+                    is: [stddelresponse,authfailure]
                     displayName: delete<<resourcePathName | !singularize | !uppercamelcase>>
                     description: Delete <<resourcePathName | !singularize>>
-                    responses:
-                      204:
-                        description: <<resourcePathName | !singularize | !uppercamelcase >> deleted
-                      404:
-                        description: <<resourcePathName | !singularize | !uppercamelcase >> not found
                 
                 std_root_list:
                   get:
@@ -596,6 +591,34 @@ traits:
               body:
                 application/json:
                   type: <<resourcePathName | !singularize>>
+            '404':
+              body:
+                text/html:
+                  type: string
+        
+        stdpostresponse:
+          responses:
+            '200':
+              body:
+                application/json:
+                  type: <<resourcePathName | !singularize>>
+            '400':
+              description: Bad Request
+            '403':
+              description: ID already exists, could not create
+              body:
+                text/html:
+                  type: string
+        
+        stddelresponse:
+          responses:
+            '204':
+              description: <<resourcePathName | !singularize | !uppercamelcase >> deleted
+            '404':
+              description: <<resourcePathName | !singularize | !uppercamelcase >> not found
+              body:
+                text/html:
+                  type: string
         
         stdresponsetype:
           responses:
