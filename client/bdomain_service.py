@@ -14,20 +14,7 @@ class BdomainService:
         It is method for DELETE /bdomain/{id}
         """
         uri = self.client.base_url + "/bdomain/" + id
-        resp = self.client.delete(uri, None, headers, query_params, content_type)
-        try:
-            if resp.status_code == 200:
-                return bdomain(resp.json()), resp
-
-            message = 'unknown status code={}'.format(resp.status_code)
-            raise UnhandledAPIError(response=resp, code=resp.status_code,
-                                    message=message)
-        except ValueError as msg:
-            raise UnmarshallError(resp, msg)
-        except UnhandledAPIError as uae:
-            raise uae
-        except Exception as e:
-            raise UnmarshallError(resp, e.message)
+        return self.client.delete(uri, None, headers, query_params, content_type)
 
     def getBdomain(self, id, headers=None, query_params=None, content_type="application/json"):
         """
