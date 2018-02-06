@@ -558,16 +558,14 @@ resourceTypes:
                         type: <<resourcePathName | !singularize >>
                 
                   delete:
-                    is: [stdresponse,authfailure]
+                    is: [authfailure]
                     displayName: delete<<resourcePathName | !singularize | !uppercamelcase>>
                     description: Delete <<resourcePathName | !singularize>>
-                    body: {}
                     responses:
-                      '200':
-                        # body:
-                          # application/json:
-                          #    type: <<resourcePathName | !singularize | !uppercamelcase>>DeleteStatus
+                      204:
                         description: <<resourcePathName | !singularize | !uppercamelcase >> deleted
+                      404:
+                        description: <<resourcePathName | !singularize | !uppercamelcase >> not found
                 
                 std_root_list:
                   get:

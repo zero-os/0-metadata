@@ -14,20 +14,7 @@ class DirService:
         It is method for DELETE /dir/{id}
         """
         uri = self.client.base_url + "/dir/" + id
-        resp = self.client.delete(uri, None, headers, query_params, content_type)
-        try:
-            if resp.status_code == 200:
-                return dir(resp.json()), resp
-
-            message = 'unknown status code={}'.format(resp.status_code)
-            raise UnhandledAPIError(response=resp, code=resp.status_code,
-                                    message=message)
-        except ValueError as msg:
-            raise UnmarshallError(resp, msg)
-        except UnhandledAPIError as uae:
-            raise uae
-        except Exception as e:
-            raise UnmarshallError(resp, e.message)
+        return self.client.delete(uri, None, headers, query_params, content_type)
 
     def getDir(self, id, headers=None, query_params=None, content_type="application/json"):
         """
