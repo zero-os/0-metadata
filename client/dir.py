@@ -8,6 +8,7 @@ from .link import link
 from .link_bobject import link_bobject
 from .metadata import metadata
 from .posix import posix
+from .file import file
 from .special import special
 from six import string_types
 
