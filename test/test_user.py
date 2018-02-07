@@ -2,7 +2,6 @@
 
 import unittest
 import random
-import logging
 import json
 import requests
 
@@ -20,47 +19,43 @@ class UserTests(unittest.TestCase):
 
         # Create a user
         rand = random.randint(1000, 10000)
-        uc =  UserClass.create(addr='home', alias=['enric'], keyPub=['123'], uid=rand)
+        uc =  UserClass.create(addr='home', alias=['jsmith'], keyPub=['123'], uid=rand)
         _, resp = self.client.user.updateUser(id=str(rand), data=uc)
         assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
 
         # List users: validate if user can be found
         users, resp = self.client.user.listUser() 
-        # logging.info("list: %s ", users.content)
         assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
 
-        for u in users: 
-            logging.info("testing %s and %s", rand,u.uid )
-            if u.uid == rand:
-                self.assertEqual(u.addr, 'home')
-                self.assertEqual(u.alias, ['enric'])
-                self.assertEqual(u.keyPub, ['123'])
-                self.assertEqual(u.uid, rand)
-                break
-        else:
-            raise Exception("User not found!")
+        j = [i for i in users if i.uid == rand]
+        assert len(j) == 1
+        u = j[0]
+        assert u.uid == uc.uid
+        assert u.addr == 'home'
+        assert u.alias == ['jsmith']
+        assert u.keyPub ==  ['123']
 
         # Retrieve the user
         user, resp = self.client.user.getUser(id=str(rand))
         assert resp.status_code ==200, "Unexpected response {}" % (resp.status_code) 
-        self.assertEqual(user.addr, 'home')
-        self.assertEqual(user.alias, ['enric'])
-        self.assertEqual(user.keyPub, ['123'])
-        self.assertEqual(user.uid, rand)
+        assert user.addr == 'home'
+        assert user.alias == ['jsmith']
+        assert user.keyPub == ['123']
+        assert user.uid == rand
 
         # Update the user
         user.addr = "Work"
-        user.alias = ["ryd"]
+        user.alias = ["jdoe"]
         user.keyPub = ["321"]
         self.client.user.updateUser(id=str(rand), data=user)
         
         # Check the updated user
         newser, resp = self.client.user.getUser(id=str(rand))
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
-        self.assertEqual(newser.addr, 'Work')
-        self.assertEqual(newser.alias, ['ryd'])
-        self.assertEqual(newser.keyPub, ['321'])
-        self.assertEqual(newser.uid, rand)
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)         
+        assert newser.addr == 'Work'
+        assert newser.alias == ['jdoe']
+        assert newser.keyPub == ['321']
+        assert newser.uid == rand
         
         # Delete User
         resp = self.client.user.deleteUser(id=str(rand))
