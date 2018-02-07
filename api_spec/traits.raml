@@ -11,20 +11,6 @@ stdresponse:
         text/html:
           type: string
 
-stdpostresponse:
-  responses:
-    '200':
-      body:
-        application/json:
-          type: <<resourcePathName | !singularize>>
-    '400':
-      description: Bad Request
-    '403':
-      description: ID already exists, could not create
-      body:
-        text/html:
-          type: string
-
 stddelresponse:
   responses:
     '204':

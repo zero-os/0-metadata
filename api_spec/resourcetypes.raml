@@ -56,7 +56,7 @@ std_id_get_post_del:
     description: Get <<resourcePathName | !singularize>>, <<descr>>
 
   post:
-    is: [stdpostresponse,authfailure]
+    is: [stdresponse,authfailure]
     displayName: update<<resourcePathName | !singularize | !uppercamelcase>>
     description: Update <<resourcePathName | !singularize>>
     body:

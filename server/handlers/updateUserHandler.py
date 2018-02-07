@@ -37,8 +37,6 @@ def updateUserHandler(id):
 
     # save new user into kvs
     redis = current_app.config['redis']
-    num = redis.hset(USERS_KEY, str(user_capnp.uid), user_capnp.to_bytes_packed())
-    if num == 0:
-        return "ID Already exists, can not update", 403 # ID Already Exists, will not update
+    redis.hset(USERS_KEY, str(user_capnp.uid), user_capnp.to_bytes_packed())
 
     return jsonify(user_capnp.to_dict())

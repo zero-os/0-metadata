@@ -4,6 +4,7 @@ import unittest
 import random
 import logging
 import json
+import requests
 
 from client import Client
 from client.user import user as UserClass
@@ -20,17 +21,17 @@ class UserTests(unittest.TestCase):
         # Create a user
         rand = random.randint(1000, 10000)
         uc =  UserClass.create(addr='home', alias=['enric'], keyPub=['123'], uid=rand)
-        resp = self.client.user.updateUser(id=str(rand), data=uc)
+        _, resp = self.client.user.updateUser(id=str(rand), data=uc)
         assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
 
         # List users: validate if user can be found
-        users = self.client.user.listUser() #  returns text, older versions of this call returned json
+        users, resp = self.client.user.listUser() 
         # logging.info("list: %s ", users.content)
-        assert users.status_code == 200, "Unexpected response {}" % (users.status_code) 
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
 
-        for u in users.json(): # It returns a dictionary, in older version users was a list of user class
-            logging.info("testing %s and %s", rand,u['uid'] )
-            if u['uid'] == rand:
+        for u in users: 
+            logging.info("testing %s and %s", rand,u.uid )
+            if u.uid == rand:
                 self.assertEqual(u.addr, 'home')
                 self.assertEqual(u.alias, ['enric'])
                 self.assertEqual(u.keyPub, ['123'])
@@ -55,7 +56,7 @@ class UserTests(unittest.TestCase):
         
         # Check the updated user
         newser, resp = self.client.user.getUser(id=str(rand))
-        assert resp.status_code == 200 "Unexpected response {}" % (resp.status_code) 
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
         self.assertEqual(newser.addr, 'Work')
         self.assertEqual(newser.alias, ['ryd'])
         self.assertEqual(newser.keyPub, ['321'])
@@ -63,9 +64,9 @@ class UserTests(unittest.TestCase):
         
         # Delete User
         resp = self.client.user.deleteUser(id=str(rand))
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
+        assert resp.status_code == 204, "Unexpected response {}" % (resp.status_code) 
 
-        _ , resp  = self.client.user.getUser(id=str(rand))
-        assert resp.status_code == 404, "Unexpected response {}" % (resp.status_code) 
-        
+        with self.assertRaises(requests.exceptions.HTTPError, msg='should  return 404') as err:
+            _ , resp  = self.client.user.getUser(id=str(rand))
+  
         
