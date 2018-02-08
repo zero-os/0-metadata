@@ -4,7 +4,7 @@ from flask import jsonify, request, current_app
 import json as JSON
 import jsonschema
 from jsonschema import Draft4Validator
-from schemas import USERS_KEY, user_schema
+from schemas import USERS_KEY, user_factory
 
 import os
 
@@ -15,7 +15,7 @@ user_schema_validator = Draft4Validator(user_jschema, resolver=user_schema_resol
 
 
 def updateUserHandler(id):
-
+    user_schema = user_factory()
     inputs = request.get_json()
 
     try:
