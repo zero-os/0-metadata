@@ -1,18 +1,12 @@
 # THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 
 from flask import jsonify, request, current_app
-
-from js9 import j
-
-user_schema = j.data.capnp.getSchemaFromPath('capnp/User.capnp', 'User')
-
-USERS_KEY = 'users'
+from .schemas import USERS_KEY, user_schema
 
 
 def listUserHandler():
-
     # get capnp encoded users list
-    redis = current_app.config['redis']    
+    redis = current_app.config['redis']
     users_blob = redis.hgetall(USERS_KEY)
 
     response = list()

@@ -1,0 +1,17 @@
+language: python
+sudo: required
+dist: trusty
+
+python:
+  - "3.5"
+
+install:
+  - pip3 install codecov pytest pytest-cov fakeredis
+  - pip3 install -r server/requirements.txt
+  - ./utils/jumpscale_install.sh
+
+script:
+  - make test
+
+after_success:
+  - codecov

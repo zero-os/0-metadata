@@ -3,6 +3,7 @@
 """
 Auto-generated class for dir
 """
+from .file import file
 from .link import link
 from .link_bobject import link_bobject
 from .metadata import metadata

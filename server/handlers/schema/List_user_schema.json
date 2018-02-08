@@ -2,6 +2,6 @@
 	"$schema": "http://json-schema.org/schema#",
 	"type": "array",
 	"items": {
-		"$ref": "User_schema.json"
+		"$ref": "user_schema.json"
 	}
 }
