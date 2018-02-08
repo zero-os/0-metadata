@@ -79,4 +79,3 @@ def _class_factory(resp):
         data = data.decode()
 
     return [tClass.create(**x) for x in json.loads(data)]        
-

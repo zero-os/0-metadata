@@ -15,13 +15,19 @@ json_schema = JSON.load(open(dir_path + '/schema/' + CLASS + '_schema.json'))
 schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', json_schema)
 schema_validator = Draft4Validator(json_schema, resolver=schema_resolver)
 
+from js9 import j
+user_schema = j.data.capnp.getSchemaFromPath('capnp/User.capnp', 'User')
+
+USERS_KEY = 'users'
+
+
 def updateUserHandler(id):
     redis = current_app.config['redis']
     key = current_app.config['dbkeys'][CLASS]
     capnp_schema = current_app.config['capnp'][CLASS]
 
     inputs = request.get_json()
-
+    
     try:
         schema_validator.validate(inputs)
     except jsonschema.ValidationError as e:
