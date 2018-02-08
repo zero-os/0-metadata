@@ -4,9 +4,11 @@ from flask import jsonify, request, current_app
 import json as JSON
 import jsonschema
 from jsonschema import Draft4Validator
-from schemas import USERS_KEY, user_schema
+from schemas import USERS_KEY, user_factory
 
 import os
+
+user_schema = user_factory()
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 user_jschema = JSON.load(open(dir_path + '/schema/user_schema.json'))

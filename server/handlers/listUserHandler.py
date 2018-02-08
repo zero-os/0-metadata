@@ -1,8 +1,9 @@
 # THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 
 from flask import jsonify, request, current_app
-from schemas import USERS_KEY, user_schema
+from schemas import USERS_KEY, user_factory
 
+user_schema = user_factory()
 
 def listUserHandler():
 
