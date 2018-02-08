@@ -8,6 +8,8 @@ from schemas import USERS_KEY, user_factory
 
 import os
 
+user_schema = user_factory()
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 user_jschema = JSON.load(open(dir_path + '/schema/user_schema.json'))
 user_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', user_jschema)
