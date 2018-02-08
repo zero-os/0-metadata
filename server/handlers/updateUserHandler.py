@@ -4,11 +4,9 @@ from flask import jsonify, request, current_app
 import json as JSON
 import jsonschema
 from jsonschema import Draft4Validator
-from schemas import USERS_KEY, user_factory
+# from .schemas import USERS_KEY, user_schema
 
 import os
-
-user_schema = user_factory()
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 user_jschema = JSON.load(open(dir_path + '/schema/user_schema.json'))
@@ -16,10 +14,15 @@ user_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/',
 user_schema_validator = Draft4Validator(user_jschema, resolver=user_schema_resolver)
 
 
-def updateUserHandler(id):
-    user_schema = user_factory()
-    inputs = request.get_json()
+from js9 import j
+user_schema = j.data.capnp.getSchemaFromPath('capnp/User.capnp', 'User')
 
+USERS_KEY = 'users'
+
+
+def updateUserHandler(id):
+    inputs = request.get_json()
+    
     try:
         user_schema_validator.validate(inputs)
     except jsonschema.ValidationError as e:

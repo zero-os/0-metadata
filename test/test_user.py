@@ -19,8 +19,7 @@ class UserTests(unittest.TestCase):
         # Create a user
         rand = random.randint(1000, 10000)
         uc =  UserClass.create(addr='home', alias=['jsmith'], keyPub=['123'], uid=rand)
-        _, resp = self.client.user.updateUser(id=str(rand), data=uc)
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
+        self.client.user.updateUser(id=str(rand), data=uc)
 
         # List users: validate if user can be found
         users, resp = self.client.user.listUser() 
