@@ -15,7 +15,6 @@ class UserTests(unittest.TestCase):
 
 
     def test_create_update_delete(self):
-        # def assignUser (addr, alias, keyPub,)
 
         # Create a user
         rand = random.randint(1000, 10000)
@@ -26,10 +25,8 @@ class UserTests(unittest.TestCase):
         # List users: validate if user can be found
         users, resp = self.client.user.listUser() 
         assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
-
-        j = [i for i in users if i.uid == rand]
-        assert len(j) == 1
-        u = j[0]
+        assert len(users) == 1
+        u = users[0]
         assert u.uid == uc.uid
         assert u.addr == 'home'
         assert u.alias == ['jsmith']
