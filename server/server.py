@@ -3,6 +3,9 @@
 Zero os meta data server
 """
 
+import capnp
+
+
 def _run():
     # Parse arguments
     import argparse
@@ -22,8 +25,23 @@ def _run():
     from app import app
     app.config['redis'] = redis
 
+    # Keys used in redis for different types
+    app.config['dbkeys'] = {
+        'user': 'users',
+        'dir': 'dir',
+    }
+    # capnp schemas used to serialize type into database
+    app.config['capnp'] = _load_capnp_schemas()
+
     # run the rest server
     app.run(debug=args.debug, port=args.port, host=args.host)
+
+
+def _load_capnp_schemas():
+    return {
+        'user': capnp.load('capnp/User.capnp').User,
+        'dir': capnp.load('capnp/Dir.capnp').Dir
+    }
 
 
 if __name__ == "__main__":

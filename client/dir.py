@@ -3,11 +3,11 @@
 """
 Auto-generated class for dir
 """
+from .file import file as file_py
 from .link import link
 from .link_bobject import link_bobject
 from .metadata import metadata
 from .posix import posix
-from .file import file as file_obj
 from .special import special
 from six import string_types
 
@@ -50,42 +50,34 @@ class dir(object):
         # set attributes
         data_types = [int]
         self.acl = client_support.set_property('acl', data, data_types, False, [], False, True, class_name)
-
         data_types = [link_bobject]
-        self.bobject_items = client_support.set_property('bobject_items', data, data_types, False, [], True, True, class_name)
-
-        data_types = [file_obj]
+        self.bobject_items = client_support.set_property(
+            'bobject_items', data, data_types, False, [], True, True, class_name)
+        data_types = [file_py]
         self.files = client_support.set_property('files', data, data_types, False, [], True, True, class_name)
-
         data_types = [link]
         self.link_items = client_support.set_property('link_items', data, data_types, False, [], True, True, class_name)
-
         data_types = [metadata]
-        self.metadata_items = client_support.set_property('metadata_items', data, data_types, False, [], True, True, class_name)
-
+        self.metadata_items = client_support.set_property(
+            'metadata_items', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
         self.name = client_support.set_property('name', data, data_types, False, [], False, True, class_name)
-
         data_types = [posix]
         self.posix = client_support.set_property('posix', data, data_types, False, [], False, False, class_name)
-
         data_types = [string_types]
         self.secret = client_support.set_property('secret', data, data_types, False, [], False, True, class_name)
-
         data_types = [int]
         self.size = client_support.set_property('size', data, data_types, False, [], False, True, class_name)
-
         data_types = [special]
-        self.special_items = client_support.set_property('special_items', data, data_types, False, [], True, True, class_name)
-
+        self.special_items = client_support.set_property(
+            'special_items', data, data_types, False, [], True, True, class_name)
         data_types = [link]
         self.subdirs = client_support.set_property('subdirs', data, data_types, False, [], True, True, class_name)
-
         data_types = [int]
         self.uid = client_support.set_property('uid', data, data_types, False, [], False, True, class_name)
-
         data_types = [int]
-        self.uid_parent = client_support.set_property('uid_parent', data, data_types, False, [], False, True, class_name)
+        self.uid_parent = client_support.set_property(
+            'uid_parent', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)
