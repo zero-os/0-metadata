@@ -54,6 +54,7 @@ class dir(object):
         self.bobjectItems = client_support.set_property(
             'bobjectItems', data, data_types, False, [], True, True, class_name)
         data_types = [file_obj]
+
         self.files = client_support.set_property('files', data, data_types, False, [], True, True, class_name)
         data_types = [link]
         self.linkItems = client_support.set_property('linkItems', data, data_types, False, [], True, True, class_name)

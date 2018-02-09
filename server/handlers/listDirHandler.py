@@ -5,6 +5,7 @@ from flask import jsonify, current_app
 CLASS='dir'
 
 def listDirHandler():
+
     redis = current_app.config['redis']
     key = current_app.config['dbkeys'][CLASS]
     capnp_schema = current_app.config['capnp'][CLASS]
@@ -15,3 +16,4 @@ def listDirHandler():
         response.append(capnp_data.to_dict())
 
     return jsonify(response), 200, {"Content-Type": 'application/json'}
+

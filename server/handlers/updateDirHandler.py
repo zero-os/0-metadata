@@ -15,6 +15,7 @@ json_schema = JSON.load(open(dir_path + '/schema/' + CLASS + '_schema.json'))
 schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', json_schema)
 schema_validator = Draft4Validator(json_schema, resolver=schema_resolver)
 
+
 def updateDirHandler(id):
     redis = current_app.config['redis']
     key = current_app.config['dbkeys'][CLASS]
@@ -34,3 +35,4 @@ def updateDirHandler(id):
     redis.hset(key, str(capnp_data.uid), capnp_data.to_bytes_packed())
 
     return jsonify(capnp_data.to_dict()), 200, {"Content-Type": "application/json"}
+
