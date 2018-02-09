@@ -4,6 +4,7 @@ Zero os meta data server
 """
 
 import capnp
+import os
 
 
 def _run():
@@ -26,10 +27,7 @@ def _run():
     app.config['redis'] = redis
 
     # Keys used in redis for different types
-    app.config['dbkeys'] = {
-        'user': 'users',
-        'dir': 'dir',
-    }
+    app.config['dbkeys'] = _set_db_keys()
     # capnp schemas used to serialize type into database
     app.config['capnp'] = _load_capnp_schemas()
 
@@ -37,10 +35,19 @@ def _run():
     app.run(debug=args.debug, port=args.port, host=args.host)
 
 
-def _load_capnp_schemas():
+def _set_db_keys():
     return {
-        'user': capnp.load('capnp/User.capnp').User,
-        'dir': capnp.load('capnp/Dir.capnp').Dir
+        'user': 'users',
+        'dir': 'dir',
+    }
+
+
+def _load_capnp_schemas():
+    dir_path = os.path.dirname(__file__)
+    return {
+        'user': capnp.load(os.path.join(dir_path, 'capnp/User.capnp')).User,
+        'dir': capnp.load(os.path.join(dir_path, 'capnp/Dir.capnp')).Dir,
+        # 'link': capnp.load('capnp/Dir.capnp').Link
     }
 
 

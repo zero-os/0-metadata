@@ -7,57 +7,60 @@ import requests
 
 from client import Client
 from client.user import user as UserClass
+from .test_base import TestBase
 
-class UserTests(unittest.TestCase):
 
-    def setUp(self):
-        self.client = Client(base_uri="http://localhost:8888")
-
+class UserTests(TestBase):
 
     def test_create_update_delete(self):
 
         # Create a user
         rand = random.randint(1000, 10000)
-        uc =  UserClass.create(addr='home', alias=['jsmith'], keyPub=['123'], uid=rand)
-        self.client.user.updateUser(id=str(rand), data=uc)
+        uc = UserClass.create(addr='home', alias=['jsmith'], keyPub=['123'], uid=rand)
+        resp = self.app.post('/user/%s' % uc.uid, data=uc.as_json(), content_type='application/json')
+        assert resp.status_code == 200
 
         # List users: validate if user can be found
-        users, resp = self.client.user.listUser() 
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
+        resp = self.app.get('/user')
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
+        users = _users_factory(resp)
         assert len(users) == 1
         u = users[0]
-        assert u.uid == uc.uid
-        assert u.addr == 'home'
-        assert u.alias == ['jsmith']
-        assert u.keyPub ==  ['123']
+        assert uc.__dict__ == u.__dict__
 
         # Retrieve the user
-        user, resp = self.client.user.getUser(id=str(rand))
-        assert resp.status_code ==200, "Unexpected response {}" % (resp.status_code) 
-        assert user.addr == 'home'
-        assert user.alias == ['jsmith']
-        assert user.keyPub == ['123']
-        assert user.uid == rand
+        resp = self.app.get('/user/%s' % uc.uid)
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
+        user = UserClass.create(**json.loads(resp.data.decode()))
+        assert user.__dict__ == uc.__dict__
 
-        # Update the user
+        # # Update the user
         user.addr = "Work"
         user.alias = ["jdoe"]
         user.keyPub = ["321"]
-        self.client.user.updateUser(id=str(rand), data=user)
-        
-        # Check the updated user
-        newser, resp = self.client.user.getUser(id=str(rand))
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)         
-        assert newser.addr == 'Work'
-        assert newser.alias == ['jdoe']
-        assert newser.keyPub == ['321']
-        assert newser.uid == rand
-        
-        # Delete User
-        resp = self.client.user.deleteUser(id=str(rand))
-        assert resp.status_code == 204, "Unexpected response {}" % (resp.status_code) 
+        resp = self.app.post('/user/%s' % user.uid, data=user.as_json(), content_type='application/json')
 
-        with self.assertRaises(requests.exceptions.HTTPError, msg='should  return 404') as err:
-            _ , resp  = self.client.user.getUser(id=str(rand))
-  
-        
+        # Check the updated user
+        resp = self.app.get('/user/%s' % user.uid)
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
+        newser = UserClass.create(**json.loads(resp.data.decode()))
+        assert newser.__dict__ == user.__dict__
+
+        # Delete User
+        resp = self.app.delete('/user/%s' % uc.uid)
+        assert resp.status_code == 204, "Unexpected response {}" % (resp.status_code)
+
+        resp = self.app.get('/user/%s' % uc.uid)
+        assert resp.status_code == 404
+
+
+def _users_factory(resp):
+    data = resp.get_data()
+    if data:
+        data = data.decode()
+    data = json.loads(data)
+    users = []
+    for x in data:
+        user = UserClass.create(**x)
+        users.append(user)
+    return users

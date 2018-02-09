@@ -163,7 +163,7 @@ types:
         description: increment id for this directory (unique id)
         type: number
         format: int32
-      uid_parent:
+      uidParent:
         required: true
         description: link to parent of this object
         type: number
@@ -185,19 +185,19 @@ types:
         required: true
         description: list of the file objects
         type: file[]
-      special_items:
+      specialItems:
         required: true
         description: list of the special objects
         type: special[]
-      link_items:
+      linkItems:
         required: true
         description: list of the special objects
         type: link[]
-      metadata_items:
+      metadataItems:
         required: true
         description: list of the metadata objects
         type: metadata[]
-      bobject_items:
+      bobjectItems:
         required: true
         description: list of the blockchain objects
         type: link_bobject[]
@@ -550,7 +550,7 @@ resourceTypes:
                     description: Get <<resourcePathName | !singularize>>, <<descr>>
                 
                   post:
-                    is: [stdpostresponse,authfailure]
+                    is: [stdresponse,authfailure]
                     displayName: update<<resourcePathName | !singularize | !uppercamelcase>>
                     description: Update <<resourcePathName | !singularize>>
                     body:
@@ -592,20 +592,6 @@ traits:
                 application/json:
                   type: <<resourcePathName | !singularize>>
             '404':
-              body:
-                text/html:
-                  type: string
-        
-        stdpostresponse:
-          responses:
-            '200':
-              body:
-                application/json:
-                  type: <<resourcePathName | !singularize>>
-            '400':
-              description: Bad Request
-            '403':
-              description: ID already exists, could not create
               body:
                 text/html:
                   type: string

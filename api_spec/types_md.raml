@@ -153,7 +153,7 @@ dir:
       description: increment id for this directory (unique id)
       type: number
       format: int32
-    uid_parent:
+    uidParent:
       required: true
       description: link to parent of this object
       type: number
@@ -175,19 +175,19 @@ dir:
       required: true
       description: list of the file objects
       type: file[]
-    special_items:
+    specialItems:
       required: true
       description: list of the special objects
       type: special[]
-    link_items:
+    linkItems:
       required: true
       description: list of the special objects
       type: link[]
-    metadata_items:
+    metadataItems:
       required: true
       description: list of the metadata objects
       type: metadata[]
-    bobject_items:
+    bobjectItems:
       required: true
       description: list of the blockchain objects
       type: link_bobject[]

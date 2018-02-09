@@ -5,7 +5,7 @@
 		"acl": {
 			"type": "integer"
 		},
-		"bobject_items": {
+		"bobjectItems": {
 			"type": "array",
 			"items": {
 				"$ref": "link_bobject_schema.json"
@@ -17,13 +17,13 @@
 				"type": "file"
 			}
 		},
-		"link_items": {
+		"linkItems": {
 			"type": "array",
 			"items": {
 				"$ref": "link_schema.json"
 			}
 		},
-		"metadata_items": {
+		"metadataItems": {
 			"type": "array",
 			"items": {
 				"$ref": "metadata_schema.json"
@@ -41,7 +41,7 @@
 		"size": {
 			"type": "integer"
 		},
-		"special_items": {
+		"specialItems": {
 			"type": "array",
 			"items": {
 				"$ref": "special_schema.json"
@@ -56,22 +56,22 @@
 		"uid": {
 			"type": "integer"
 		},
-		"uid_parent": {
+		"uidParent": {
 			"type": "integer"
 		}
 	},
 	"required": [
 		"acl",
-		"bobject_items",
+		"bobjectItems",
 		"files",
-		"link_items",
-		"metadata_items",
+		"linkItems",
+		"metadataItems",
 		"name",
 		"secret",
 		"size",
-		"special_items",
+		"specialItems",
 		"subdirs",
 		"uid",
-		"uid_parent"
+		"uidParent"
 	]
 }
