@@ -21,8 +21,6 @@ def updateUserHandler(id):
     capnp_schema = current_app.config['capnp'][CLASS]
 
     inputs = request.get_json()
-    user_key = current_app.config['dbkeys']['user']
-    user_schema = current_app.config['capnp']['user']
 
     try:
         schema_validator.validate(inputs)
