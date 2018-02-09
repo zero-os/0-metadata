@@ -2,83 +2,79 @@
 
 import unittest
 import random
-import logging
 import json
 import requests
+from .equality import dirEqual
 
 from client import Client
 from client.dir import dir as DirClass
+from client.posix import posix as PosixClass
+from .test_base import TestBase
+import posix 
 
-class UserTests(unittest.TestCase):
 
-    def setUp(self):
-        self.client = Client(base_uri="http://localhost:8888")
-
+class DirTests(TestBase):
 
     def test_create_update_delete(self):
 
         # Create a object instance
         rand = random.randint(1000, 10000)
-        inst =  DirClass.create(        # ******
-              acl = 2
-            , bobject_items = list()
-            , files = list()
-            , link_items =list()
-            , metadata_items = list()
-            , name = "directory_name"
-            , posix = None
-            , secret = "secret"
-            , size = 2173
-            , special_items = list()
-            , subdirs = list() 
-            , uid = rand
-            , uid_parent = 1 )
+        instCreate =  DirClass.create(        # ******
+            acl = 2,
+            bobjectItems = [],
+            files = [],
+            linkItems = [],
+            metadataItems = [],
+            name = "directory_name",
+            posix = PosixClass.create(mode=777, uname="root", gname="root"),
+            secret = "secret",
+            size = 2173,
+            specialItems = [],
+            subdirs = [] ,
+            uid = rand,
+            uidParent = 1 )
 
-        _, resp = self.client.dir.updateDir(id=str(rand), data=inst)    # ******
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
+        resp = self.app.post('/dir/%s' % instCreate.uid, data=instCreate.as_json(), content_type='application/json')
+        assert resp.status_code == 200
 
-        # List objects: validate if instance can be found
-        instList, resp = self.client.dir.listDir() # ******
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
+        # List Object: validate if obj can be found
+        resp = self.app.get('/dir')     # ****
+        assert resp.status_code == 200
+        instances = _dir_factory(resp)  # *****
+        assert len(instances) == 1
+        instList = instances[0]
+        dirEqual(instCreate, instList)
 
-        for inst in instList: 
-            logging.info("testing %s and %s", rand,inst.uid )
-            if inst.uid == rand:
-                self.assertEqual(inst.addr, 'home')         # ******
-                self.assertEqual(inst.alias, ['enric'])     # ******
-                self.assertEqual(inst.keyPub, ['123'])      # ******
-                self.assertEqual(inst.uid, rand)            
-                break
-        else:
-            raise Exception("Dir not found!")       # ******
-
-        # Retrieve the object
-        inst, resp = self.client.dir.getDir(id=str(rand))   # ******
-        assert resp.status_code ==200, "Unexpected response {}" % (resp.status_code) 
-        self.assertEqual(inst.addr, 'home')                 # ******
-        self.assertEqual(inst.alias, ['enric'])             # ******
-        self.assertEqual(inst.keyPub, ['123'])              # ******
-        self.assertEqual(inst.uid, rand)                    
+        # Retrieve the Object
+        resp = self.app.get('/dir/%s' % instCreate.uid)     # ******
+        assert resp.status_code == 200
+        instGet = DirClass.create(**json.loads(resp.data.decode()))
+        dirEqual(instCreate, instGet)
 
         # Update the object
-        inst.addr = "Work"          # ******
-        inst.alias = ["ryd"]        # ******
-        inst.keyPub = ["321"]       # ******
-        self.client.dir.updateDir(id=str(rand), data=inst)  # ******
-        
+        instGet.name = "another dir name"
+        instGet.secret = "FYO"
+        instGet.size = 4321
+        resp = self.app.post('/dir/%s' % instGet.uid, data=instGet.as_json(), content_type='application/json')
+
         # Check the updated object
-        newinst, resp = self.client.dir.getUser(id=str(rand))   # ******
-        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code) 
-        self.assertEqual(newinst.addr, 'Work')      # ******
-        self.assertEqual(newinst.alias, ['ryd'])    # ******
-        self.assertEqual(newinst.keyPub, ['321'])   # ******
-        self.assertEqual(newinst.uid, rand)         # ******
+        resp = self.app.get('/dir/%s' % instGet.uid)
+        assert resp.status_code == 200
+        instUpd = DirClass.create(**json.loads(resp.data.decode())) 
+        dirEqual(instUpd, instGet)
         
         # Delete object
-        resp = self.client.dir.deleteDir(id=str(rand))  # ******
+        resp = self.app.delete('/dir/%s' % instCreate.uid)  # ******
         assert resp.status_code == 204, "Unexpected response {}" % (resp.status_code) 
 
-        with self.assertRaises(requests.exceptions.HTTPError, msg='should  return 404') as err:
-            _ , resp  = self.client.dir.getDir(id=str(rand))    # ******
-  
-        
+        resp = self.app.get('/dir/%s' % instCreate.uid)
+        assert resp.status_code == 404
+
+
+def _dir_factory(resp):
+    data = resp.get_data()
+    if data:
+        data = data.decode()
+
+    return [DirClass.create(**x) for x in json.loads(data)]        
+
