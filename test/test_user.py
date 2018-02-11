@@ -58,5 +58,9 @@ def _users_factory(resp):
     data = resp.get_data()
     if data:
         data = data.decode()
-
-    return [UserClass.create(**x) for x in json.loads(data)]
+    data = json.loads(data)
+    users = []
+    for x in data:
+        user = UserClass.create(**x)
+        users.append(user)
+    return users

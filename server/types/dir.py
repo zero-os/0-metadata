@@ -5,7 +5,6 @@ Auto-generated class for dir
 """
 from .link import link
 from .link_bobject import link_bobject
-from .file import file as file_type
 from .metadata import metadata
 from .posix import posix
 from .special import special
@@ -53,7 +52,7 @@ class dir(object):
         data_types = [link_bobject]
         self.bobjectItems = client_support.set_property(
             'bobjectItems', data, data_types, False, [], True, True, class_name)
-        data_types = [file_type]
+        data_types = [file]
         self.files = client_support.set_property('files', data, data_types, False, [], True, True, class_name)
         data_types = [link]
         self.linkItems = client_support.set_property('linkItems', data, data_types, False, [], True, True, class_name)
