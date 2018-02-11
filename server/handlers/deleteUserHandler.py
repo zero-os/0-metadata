@@ -2,12 +2,13 @@
 
 from flask import jsonify, current_app
 
+CLASS='user'
 
 def deleteUserHandler(id):
     redis = current_app.config['redis']
-    user_key = current_app.config['dbkeys']['user']
+    key = current_app.config['dbkeys'][CLASS]
 
-    if redis.hdel(user_key, id) == 1:
+    if redis.hdel(key, id) == 1:
         return "", 204, {"Content-type": "application/json"}
 
     return "", 404, {"Content-type": "application/json"}

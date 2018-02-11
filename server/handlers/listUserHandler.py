@@ -2,19 +2,16 @@
 
 from flask import jsonify, current_app
 
+CLASS='user'
 
 def listUserHandler():
-    # get capnp encoded users list
     redis = current_app.config['redis']
-    user_key = current_app.config['dbkeys']['user']
-    user_schema = current_app.config['capnp']['user']
-
-    users_blob = redis.hgetall(user_key)
+    key = current_app.config['dbkeys'][CLASS]
+    capnp_schema = current_app.config['capnp'][CLASS]
 
     response = list()
-
-    for user_blob in users_blob.values():
-        user = user_schema.from_bytes_packed(user_blob)
-        response.append(user.to_dict())
+    for blob in redis.hvals(key):
+        data = capnp_schema.from_bytes_packed(blob)
+        response.append(data.to_dict())
 
     return jsonify(response), 200, {"Content-type": 'application/json'}

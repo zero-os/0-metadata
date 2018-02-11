@@ -2,11 +2,13 @@
 
 from flask import jsonify, current_app
 
+CLASS='dir'
 
 def deleteDirHandler(id):
     redis = current_app.config['redis']
-    dir_key = current_app.config['dbkeys']['dir']
+    key = current_app.config['dbkeys'][CLASS]
 
-    redis.hdel(dir_key, id)
+    if redis.hdel(key, id) == 1:
+        return "", 204, {"Content-type": "application/json"}
 
-    return "", 204, {"Content-type": "application/json"}
+    return "", 404, {"Content-type": "application/json"}
