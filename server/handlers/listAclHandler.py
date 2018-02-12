@@ -15,3 +15,4 @@ def listAclHandler():
         response.append(capnp_data.to_dict())
 
     return jsonify(response), 200, {"Content-Type": 'application/json'}
+
