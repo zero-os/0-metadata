@@ -3,6 +3,7 @@
 """
 Auto-generated class for dir
 """
+from .file import file as file_obj
 from .link import link
 from .link_bobject import link_bobject
 from .metadata import metadata
@@ -52,7 +53,7 @@ class dir(object):
         data_types = [link_bobject]
         self.bobjectItems = client_support.set_property(
             'bobjectItems', data, data_types, False, [], True, True, class_name)
-        data_types = [file]
+        data_types = [file_obj]
         self.files = client_support.set_property('files', data, data_types, False, [], True, True, class_name)
         data_types = [link]
         self.linkItems = client_support.set_property('linkItems', data, data_types, False, [], True, True, class_name)

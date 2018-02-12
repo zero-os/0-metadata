@@ -1,13 +1,8 @@
 # THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 
-from flask import jsonify, current_app
+from flask import jsonify, request, current_app
 
 CLASS='dir'
-<<<<<<< HEAD
-
-CLASS='dir'
-=======
->>>>>>> e07e12d... Some refactoring on User and Dir handlers
 
 def getDirHandler(id):
     redis = current_app.config['redis']
@@ -20,10 +15,3 @@ def getDirHandler(id):
 
     data = capnp_schema.from_bytes_packed(blob)
     return jsonify(data.to_dict()), 200, {"Content-type": "application/json"}
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> e07e12d... Some refactoring on User and Dir handlers
-=======
->>>>>>> e07e12d... Some refactoring on User and Dir handlers

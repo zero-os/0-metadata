@@ -14,12 +14,4 @@ def getUserHandler(id):
         return "", 404, {"Content-type": "application/json"}
 
     data = capnp_schema.from_bytes_packed(blob)
-<<<<<<< HEAD
-<<<<<<< HEAD
     return jsonify(data.to_dict()), 200, {"Content-type": "application/json"}
-=======
-    return jsonify(data.to_dict()), 200, {"Content-type": "application/json"}
->>>>>>> e07e12d... Some refactoring on User and Dir handlers
-=======
-    return jsonify(data.to_dict()), 200, {"Content-type": "application/json"}
->>>>>>> e07e12d... Some refactoring on User and Dir handlers
