@@ -15,3 +15,4 @@ def getBdomainHandler(id):
 
     data = capnp_schema.from_bytes_packed(blob)
     return jsonify(data.to_dict()), 200, {"Content-Type": "application/json"}
+
