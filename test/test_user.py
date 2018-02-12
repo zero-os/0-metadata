@@ -8,7 +8,7 @@ import requests
 from client import Client
 from client.user import user as UserClass
 from .test_base import TestBase
-
+from .equality import userEqual as equal
 
 class UserTests(TestBase):
 
@@ -26,13 +26,13 @@ class UserTests(TestBase):
         users = _users_factory(resp)
         assert len(users) == 1
         u = users[0]
-        assert uc.__dict__ == u.__dict__
+        assert equal(uc,  u)
 
         # Retrieve the user
         resp = self.app.get('/user/%s' % uc.uid)
         assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
         user = UserClass.create(**json.loads(resp.data.decode()))
-        assert user.__dict__ == uc.__dict__
+        assert equal(uc,  user)
 
         # # Update the user
         user.addr = "Work"
@@ -44,7 +44,7 @@ class UserTests(TestBase):
         resp = self.app.get('/user/%s' % user.uid)
         assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
         newser = UserClass.create(**json.loads(resp.data.decode()))
-        assert newser.__dict__ == user.__dict__
+        assert equal(newser,  user)
 
         # Delete User
         resp = self.app.delete('/user/%s' % uc.uid)

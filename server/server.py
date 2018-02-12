@@ -39,6 +39,7 @@ def _set_db_keys():
     return {
         'user': 'users',
         'dir': 'dir',
+        "group": 'group'
     }
 
 
@@ -47,6 +48,7 @@ def _load_capnp_schemas():
     return {
         'user': capnp.load(os.path.join(dir_path, 'capnp/User.capnp')).User,
         'dir': capnp.load(os.path.join(dir_path, 'capnp/Dir.capnp')).Dir,
+        'group': capnp.load(os.path.join(dir_path, 'capnp/Group.capnp')).Group,
         # 'link': capnp.load('capnp/Dir.capnp').Link
     }
 

@@ -1,6 +1,6 @@
 # THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 
-from flask import jsonify, request, current_app
+from flask import jsonify, current_app
 
 CLASS='dir'
 

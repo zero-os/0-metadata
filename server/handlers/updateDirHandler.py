@@ -9,17 +9,29 @@ from jsonschema import Draft4Validator
 from flask import current_app, jsonify, request
 
 CLASS='dir'
+<<<<<<< HEAD
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+json_schema = JSON.load(open(dir_path + '/schema/' + CLASS + '_schema.json'))
+schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', json_schema)
+schema_validator = Draft4Validator(json_schema, resolver=schema_resolver)
+=======
+>>>>>>> e07e12d... Some refactoring on User and Dir handlers
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 json_schema = JSON.load(open(dir_path + '/schema/' + CLASS + '_schema.json'))
 schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', json_schema)
 schema_validator = Draft4Validator(json_schema, resolver=schema_resolver)
 
-
 def updateDirHandler(id):
     redis = current_app.config['redis']
+<<<<<<< HEAD
     key = current_app.config['dbkeys']['dir']
     capnp_schema = current_app.config['capnp']['dir']
+=======
+    key = current_app.config['dbkeys'][CLASS]
+    capnp_schema = current_app.config['capnp'][CLASS]
+>>>>>>> e07e12d... Some refactoring on User and Dir handlers
 
     inputs = request.get_json()
 
