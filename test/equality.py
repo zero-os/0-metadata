@@ -64,4 +64,4 @@ def bobjectEqual(A,B):
     assert A.signature == B.signature
     assert A.uid == B.uid
     return True    
-S
+

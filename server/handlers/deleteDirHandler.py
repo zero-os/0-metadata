@@ -12,4 +12,3 @@ def deleteDirHandler(id):
         return "", 204, {"Content-Type": "application/json"}
 
     return "", 404, {"Content-Type": "application/json"}
-
