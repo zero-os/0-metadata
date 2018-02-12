@@ -12,11 +12,14 @@ def listUserHandler():
     response = list()
     for blob in redis.hvals(key):
 <<<<<<< HEAD
+<<<<<<< HEAD
         data = capnp_schema.from_bytes_packed(blob)
         response.append(data.to_dict())
 
     return jsonify(response), 200, {"Content-type": 'application/json'}
 =======
+=======
+>>>>>>> e07e12d... Some refactoring on User and Dir handlers
         capnp_data = capnp_schema.from_bytes_packed(blob)
         response.append(capnp_data.to_dict())
 

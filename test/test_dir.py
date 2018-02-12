@@ -6,6 +6,7 @@ import logging
 import json
 import requests
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 from client import Client
 from client.dir import dir as DirClass
@@ -13,6 +14,11 @@ from client.dir import dir as DirClass
 from .equality import dirEqual as equal
 
 from client import Client
+=======
+from .equality import dirEqual as equal
+
+from client import Client
+>>>>>>> e07e12d... Some refactoring on User and Dir handlers
 from client.dir import dir as tClass
 from client.posix import posix as PosixClass
 from .test_base import TestBase
@@ -29,6 +35,7 @@ class UserTests(unittest.TestCase):
 
         # Create a object instance
         rand = random.randint(1000, 10000)
+<<<<<<< HEAD
 <<<<<<< HEAD
         inst =  DirClass.create(        # ******
               acl = 2
@@ -71,6 +78,8 @@ class UserTests(unittest.TestCase):
         self.assertEqual(inst.keyPub, ['123'])              # ******
         self.assertEqual(inst.uid, rand)                    
 =======
+=======
+>>>>>>> e07e12d... Some refactoring on User and Dir handlers
         instCreate =  tClass.create(        # ******
             acl = 2,
             bobjectItems = [],
@@ -102,6 +111,9 @@ class UserTests(unittest.TestCase):
         assert resp.status_code == 200
         instGet = tClass.create(**json.loads(resp.data.decode()))
         assert equal(instCreate, instGet)
+<<<<<<< HEAD
+>>>>>>> e07e12d... Some refactoring on User and Dir handlers
+=======
 >>>>>>> e07e12d... Some refactoring on User and Dir handlers
 
         # Update the object
@@ -123,6 +135,9 @@ class UserTests(unittest.TestCase):
         assert resp.status_code == 200
         instUpd = tClass.create(**json.loads(resp.data.decode())) 
         assert equal(instUpd, instGet)
+<<<<<<< HEAD
+>>>>>>> e07e12d... Some refactoring on User and Dir handlers
+=======
 >>>>>>> e07e12d... Some refactoring on User and Dir handlers
         
         # Delete object
