@@ -3,6 +3,7 @@
 """
 Auto-generated class for dir
 """
+from .file import file as file_obj
 from .link import link
 from .link_bobject import link_bobject
 from .metadata import metadata
@@ -22,18 +23,18 @@ class dir(object):
     def create(**kwargs):
         """
         :type acl: int
-        :type bobject_items: list[link_bobject]
+        :type bobjectItems: list[link_bobject]
         :type files: list[file]
-        :type link_items: list[link]
-        :type metadata_items: list[metadata]
+        :type linkItems: list[link]
+        :type metadataItems: list[metadata]
         :type name: string_types
         :type posix: posix
         :type secret: string_types
         :type size: int
-        :type special_items: list[special]
+        :type specialItems: list[special]
         :type subdirs: list[link]
         :type uid: int
-        :type uid_parent: int
+        :type uidParent: int
         :rtype: dir
         """
 
@@ -50,15 +51,15 @@ class dir(object):
         data_types = [int]
         self.acl = client_support.set_property('acl', data, data_types, False, [], False, True, class_name)
         data_types = [link_bobject]
-        self.bobject_items = client_support.set_property(
-            'bobject_items', data, data_types, False, [], True, True, class_name)
-        data_types = [file]
+        self.bobjectItems = client_support.set_property(
+            'bobjectItems', data, data_types, False, [], True, True, class_name)
+        data_types = [file_obj]
         self.files = client_support.set_property('files', data, data_types, False, [], True, True, class_name)
         data_types = [link]
-        self.link_items = client_support.set_property('link_items', data, data_types, False, [], True, True, class_name)
+        self.linkItems = client_support.set_property('linkItems', data, data_types, False, [], True, True, class_name)
         data_types = [metadata]
-        self.metadata_items = client_support.set_property(
-            'metadata_items', data, data_types, False, [], True, True, class_name)
+        self.metadataItems = client_support.set_property(
+            'metadataItems', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
         self.name = client_support.set_property('name', data, data_types, False, [], False, True, class_name)
         data_types = [posix]
@@ -68,15 +69,14 @@ class dir(object):
         data_types = [int]
         self.size = client_support.set_property('size', data, data_types, False, [], False, True, class_name)
         data_types = [special]
-        self.special_items = client_support.set_property(
-            'special_items', data, data_types, False, [], True, True, class_name)
+        self.specialItems = client_support.set_property(
+            'specialItems', data, data_types, False, [], True, True, class_name)
         data_types = [link]
         self.subdirs = client_support.set_property('subdirs', data, data_types, False, [], True, True, class_name)
         data_types = [int]
         self.uid = client_support.set_property('uid', data, data_types, False, [], False, True, class_name)
         data_types = [int]
-        self.uid_parent = client_support.set_property(
-            'uid_parent', data, data_types, False, [], False, True, class_name)
+        self.uidParent = client_support.set_property('uidParent', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

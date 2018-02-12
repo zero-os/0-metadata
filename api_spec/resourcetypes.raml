@@ -64,16 +64,9 @@ std_id_get_post_del:
         type: <<resourcePathName | !singularize >>
 
   delete:
-    is: [stdresponse,authfailure]
+    is: [stddelresponse,authfailure]
     displayName: delete<<resourcePathName | !singularize | !uppercamelcase>>
     description: Delete <<resourcePathName | !singularize>>
-    body: {}
-    responses:
-      '200':
-        # body:
-          # application/json:
-          #    type: <<resourcePathName | !singularize | !uppercamelcase>>DeleteStatus
-        description: <<resourcePathName | !singularize | !uppercamelcase >> deleted
 
 std_root_list:
   get:

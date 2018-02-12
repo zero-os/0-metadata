@@ -1,31 +1,65 @@
 #!/usr/bin/python
+
 import unittest
+import random
+import json
+import requests
+
 from client import Client
-from client.user import user
+from client.user import user as tClass
+from .test_base import TestBase
+from .equality import userEqual as equal
 
-class UserTests(unittest.TestCase):
+CLASS='user'
+URLCLASS='/' + CLASS + '/%s'
 
-    def setUp(self):
-        self.client = Client(base_uri="http://localhost:8888")
+class UserTests(TestBase):
 
+    def test_create_update_delete(self):
 
-    def test_create_update(self):
         # Create a user
-        uc = user.create(addr='home', alias=['enric'], keyPub=['123'], uid=2)
-        self.client.user.updateUser(id=str(2), data=uc)
+        rand = random.randint(1000, 10000)
+        uc = tClass.create(addr='home', alias=['jsmith'], keyPub=['123'], uid=rand)
+        resp = self.app.post(URLCLASS % uc.uid, data=uc.as_json(), content_type='application/json')
+        assert resp.status_code == 200
 
         # List users: validate if user can be found
-        users, _ = self.client.user.listUser()
-        for u in users:
-            if u.uid == 2:
-                self.assertEqual(u.addr, 'home')
-                self.assertEqual(u.alias, ['enric'])
-                self.assertEqual(u.keyPub, ['123'])
-                self.assertEqual(u.uid, 2)
-                break
-        else:
-            raise Exception("User not found!")
+        resp = self.app.get('/' + CLASS)
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
+        users = _class_factory(resp)
+        assert len(users) == 1
+        u = users[0]
+        assert equal(uc,  u)
 
-        # Update the user
+        # Retrieve the user
+        resp = self.app.get(URLCLASS % uc.uid)
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
+        user = tClass.create(**json.loads(resp.data.decode()))
+        assert equal(uc,  user)
 
-        # List users: validate if user can be found
+        # # Update the user
+        user.addr = "Work"
+        user.alias = ["jdoe"]
+        user.keyPub = ["321"]
+        resp = self.app.post(URLCLASS % user.uid, data=user.as_json(), content_type='application/json')
+
+        # Check the updated user
+        resp = self.app.get(URLCLASS % user.uid)
+        assert resp.status_code == 200, "Unexpected response {}" % (resp.status_code)
+        newser = tClass.create(**json.loads(resp.data.decode()))
+        assert equal(newser,  user)
+
+        # Delete User
+        resp = self.app.delete(URLCLASS % uc.uid)
+        assert resp.status_code == 204, "Unexpected response {}" % (resp.status_code)
+
+        resp = self.app.get(URLCLASS % uc.uid)
+        assert resp.status_code == 404
+
+
+def _class_factory(resp):
+    data = resp.get_data()
+    if data:
+        data = data.decode()
+
+    return [tClass.create(**x) for x in json.loads(data)]

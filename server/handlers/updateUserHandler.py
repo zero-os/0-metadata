@@ -1,42 +1,36 @@
 # THIS FILE IS SAFE TO EDIT. It will not be overwritten when rerunning go-raml.
 
-from flask import jsonify, request, current_app
-
 import json as JSON
+import os
+
 import jsonschema
 from jsonschema import Draft4Validator
 
+from flask import current_app, jsonify, request
 
-from js9 import j
-
-
-import os
+CLASS='user'
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-user_schema = JSON.load(open(dir_path + '/schema/user_schema.json'))
-user_schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', user_schema)
-user_schema_validator = Draft4Validator(user_schema, resolver=user_schema_resolver)
-
-user_schema = j.data.capnp.getSchemaFromPath('capnp/User.capnp', 'User')
-
-
-USERS_KEY = 'users'
-
+json_schema = JSON.load(open(dir_path + '/schema/' + CLASS + '_schema.json'))
+schema_resolver = jsonschema.RefResolver('file://' + dir_path + '/schema/', json_schema)
+schema_validator = Draft4Validator(json_schema, resolver=schema_resolver)
 
 def updateUserHandler(id):
+    redis = current_app.config['redis']
+    key = current_app.config['dbkeys'][CLASS]
+    capnp_schema = current_app.config['capnp'][CLASS]
 
     inputs = request.get_json()
 
     try:
-        user_schema_validator.validate(inputs)
+        schema_validator.validate(inputs)
     except jsonschema.ValidationError as e:
         return jsonify(errors="bad request body: %s" % e.message), 400
 
-    # create capnp user object
-    user_capnp = user_schema.from_dict(inputs)
+    # create capnp object
+    capnp_data = capnp_schema.new_message(**inputs)
 
-    # save new user into kvs
-    redis = current_app.config['redis']
-    redis.hset(USERS_KEY, str(user_capnp.uid), user_capnp.to_bytes_packed())
+    # save new object into kvs
+    redis.hset(key, str(capnp_data.uid), capnp_data.to_bytes_packed())
 
-    return jsonify(user_capnp.to_dict())
+    return jsonify(capnp_data.to_dict()), 200, {"Content-type": "application/json"}

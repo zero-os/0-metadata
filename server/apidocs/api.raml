@@ -163,7 +163,7 @@ types:
         description: increment id for this directory (unique id)
         type: number
         format: int32
-      uid_parent:
+      uidParent:
         required: true
         description: link to parent of this object
         type: number
@@ -185,19 +185,19 @@ types:
         required: true
         description: list of the file objects
         type: file[]
-      special_items:
+      specialItems:
         required: true
         description: list of the special objects
         type: special[]
-      link_items:
+      linkItems:
         required: true
         description: list of the special objects
         type: link[]
-      metadata_items:
+      metadataItems:
         required: true
         description: list of the metadata objects
         type: metadata[]
-      bobject_items:
+      bobjectItems:
         required: true
         description: list of the blockchain objects
         type: link_bobject[]
@@ -558,16 +558,9 @@ resourceTypes:
                         type: <<resourcePathName | !singularize >>
                 
                   delete:
-                    is: [stdresponse,authfailure]
+                    is: [stddelresponse,authfailure]
                     displayName: delete<<resourcePathName | !singularize | !uppercamelcase>>
                     description: Delete <<resourcePathName | !singularize>>
-                    body: {}
-                    responses:
-                      '200':
-                        # body:
-                          # application/json:
-                          #    type: <<resourcePathName | !singularize | !uppercamelcase>>DeleteStatus
-                        description: <<resourcePathName | !singularize | !uppercamelcase >> deleted
                 
                 std_root_list:
                   get:
@@ -598,6 +591,20 @@ traits:
               body:
                 application/json:
                   type: <<resourcePathName | !singularize>>
+            '404':
+              body:
+                text/html:
+                  type: string
+        
+        stddelresponse:
+          responses:
+            '204':
+              description: <<resourcePathName | !singularize | !uppercamelcase >> deleted
+            '404':
+              description: <<resourcePathName | !singularize | !uppercamelcase >> not found
+              body:
+                text/html:
+                  type: string
         
         stdresponsetype:
           responses:
