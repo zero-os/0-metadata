@@ -48,20 +48,20 @@ for i in $(seq 1 ${maxrecords}); do
 done 
 
 echo -n "POST..."
-vegeta attack -targets=${postfile} -duration=${secs} > result.POST
+vegeta attack -targets=${postfile} -duration=${secs} -rate=${rate} > result.POST
 cat result.POST | vegeta report -reporter=plot > plot.POST.html
 
 echo -n "GET..."
-vegeta attack -targets=${getfile} -duration=${secs} > result.GET
+vegeta attack -targets=${getfile} -duration=${secs}  -rate=${rate} > result.GET
 cat result.GET |vegeta report -reporter=plot > plot.GET.html
 
 echo -n "LIST..."
 echo "GET ${url}/user" | \
-vegeta attack  -duration=${secs} > result.LIST
+vegeta attack  -duration=${secs}  -rate=${rate} > result.LIST
 cat result.LIST | vegeta report -reporter=plot > plot.LIST.html
 
 echo -n "DELETE..."
-vegeta attack -targets=${delfile} -duration=${secs} > result.DEL
+vegeta attack -targets=${delfile} -duration=${secs}  -rate=${rate} > result.DEL
 cat result.DEL | vegeta report -reporter=plot > plot.DEL.html
 
 
