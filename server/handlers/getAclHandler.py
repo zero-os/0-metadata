@@ -11,7 +11,7 @@ def getAclHandler(id):
 
     blob = redis.hget(key, id)
     if blob is None:
-        return "", 404, {"Content-type": "application/json"}
+        return "", 404, {"Content-Type": "application/json"}
 
     data = capnp_schema.from_bytes_packed(blob)
-    return jsonify(data.to_dict()), 200, {"Content-type": "application/json"}
+    return jsonify(data.to_dict()), 200, {"Content-Type": "application/json"}

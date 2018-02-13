@@ -14,4 +14,4 @@ def listAclHandler():
         capnp_data = capnp_schema.from_bytes_packed(blob)
         response.append(capnp_data.to_dict())
 
-    return jsonify(response), 200, {"Content-type": 'application/json'}
+    return jsonify(response), 200, {"Content-Type": 'application/json'}

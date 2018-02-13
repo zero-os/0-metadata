@@ -9,6 +9,6 @@ def deleteDirHandler(id):
     key = current_app.config['dbkeys'][CLASS]
 
     if redis.hdel(key, id) == 1:
-        return "", 204, {"Content-type": "application/json"}
+        return "", 204, {"Content-Type": "application/json"}
 
-    return "", 404, {"Content-type": "application/json"}
+    return "", 404, {"Content-Type": "application/json"}

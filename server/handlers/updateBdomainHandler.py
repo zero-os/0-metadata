@@ -34,4 +34,4 @@ def updateBdomainHandler(id):
     # save new object into kvs
     redis.hset(key, str(capnp_data.uid), capnp_data.to_bytes_packed())
 
-    return jsonify(capnp_data.to_dict()), 200, {"Content-type": "application/json"}
+    return jsonify(capnp_data.to_dict()), 200, {"Content-Type": "application/json"}
