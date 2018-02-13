@@ -40,3 +40,28 @@ def aclEqual(A,B):
     assert sorted(A.aci) == sorted(B.aci)
     assert A.hash == B.hash
     return True
+
+def bdomainEqual(A,B):
+    assert A.uid == B.uid
+    assert A.id == B.id
+    assert A.admins == B.admins
+    assert A.author == B.author
+    assert A.description == B.description
+    assert A.moddate == B.moddate
+    assert A.name == B.name
+    assert A.signature == B.signature
+    return True 
+
+def bobjectEqual(A,B):
+    assert A.author == B.author
+    assert A.compressionType == B.compressionType
+    assert A.data == B.data
+    assert A.digitalmeUrl == B.digitalmeUrl
+    assert A.domain == B.domain
+    assert A.id == B.id
+    assert A.key == B.key
+    assert A.moddate == B.moddate
+    assert A.signature == B.signature
+    assert A.uid == B.uid
+    return True    
+

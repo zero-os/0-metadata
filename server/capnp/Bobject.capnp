@@ -6,10 +6,11 @@ struct Bobject {
   author @0 :UInt32;
   compressionType @1 :EnumBobjectCompressionType;
   data @2 :Text;
-  domain @3 :UInt32;
-  id @4 :UInt32;
-  key @5 :Text;
-  moddate @6 :UInt32;
-  signature @7 :Text;
-  uid @8 :UInt32;
+  digitalmeUrl @3:Text;
+  domain @4 :UInt32;
+  id @5 :UInt32;
+  key @6 :Text;
+  moddate @7 :UInt32;
+  signature @8 :Text;
+  uid @9 :UInt32;
 }

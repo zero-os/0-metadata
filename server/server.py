@@ -41,6 +41,8 @@ def _set_db_keys():
         'dir': 'dir',
         'group': 'group',
         'acl': 'acl',
+        'bdomain': 'bdomain',
+        'bobject': 'bobject',
     }
 
 
@@ -51,6 +53,8 @@ def _load_capnp_schemas():
         'dir': capnp.load(os.path.join(dir_path, 'capnp/Dir.capnp')).Dir,
         'group': capnp.load(os.path.join(dir_path, 'capnp/Group.capnp')).Group,
         'acl': capnp.load(os.path.join(dir_path, 'capnp/Acl.capnp')).Acl,
+        'bdomain': capnp.load(os.path.join(dir_path, 'capnp/Bdomain.capnp')).Bdomain,
+        'bobject': capnp.load(os.path.join(dir_path, 'capnp/Bobject.capnp')).Bobject,
         # 'link': capnp.load('capnp/Dir.capnp').Link
     }
 
