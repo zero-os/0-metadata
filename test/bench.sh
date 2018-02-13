@@ -1,25 +1,34 @@
 #! /bin/bash
 
 usage() {
-    echo "Usage: $0 [URL]"
-    echo "  URL: Url to benchmark ie: http://172.16.0.2:8888"
-    exit 1
+    echo "Usage: $0 [URL] [rate]"
+    echo "  URL: Url to benchmark (default: http://172.17.0.2:8888)"
+    echo " rate: request per second (default: 50)"
 }
 
+clean() {
+    rm -Rf ${targets}
+    popd
+    echo "CLEANING"
+    exit 0
+}
 
 a=$(which vegeta) 
 [ $? -ne 0 ] && echo "Vegeta Dependency missing" && exit 1
 
-[ "$1" = "" ] && usage
+[ "$1" == "" -o "$2" == "" ] &&   usage
 
-url="$1"
-
+url="${1:-http://172.17.0.2:8888}"
+rate="${2:-50}"
 secs="10s"
+rdir=$(dirname $0)
 targets="./targets"
 maxrecords=999
 
+pushd ./
+cd ${rdir}
+trap clean ERR
 
-echo -n "POST..."
 mkdir -p ${targets}
 postfile="${targets}/POST"
 getfile="${targets}/GET"
@@ -38,6 +47,7 @@ for i in $(seq 1 ${maxrecords}); do
     echo "DELETE ${url}/user/${i}" >> ${delfile}
 done 
 
+echo -n "POST..."
 vegeta attack -targets=${postfile} -duration=${secs} > result.POST
 cat result.POST | vegeta report -reporter=plot > plot.POST.html
 
@@ -61,4 +71,4 @@ for i in POST GET LIST DEL; do
     cat result.${i} | vegeta report
 done
 
-rm -Rf ${targets}
+clean

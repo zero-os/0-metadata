@@ -15,4 +15,7 @@ generate-server:
 generate-client:
 	js9_raml generate_pyclient
 
+bench:
+	/bin/bash test/bench.sh http://172.17.0.2:8888
+
 .PHONY: test test-ui generate generate-server generate-client
