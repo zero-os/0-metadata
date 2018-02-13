@@ -14,9 +14,6 @@ class TestBase(unittest.TestCase):
         app.config['dbkeys'] = _set_db_keys()
         # capnp schemas used to serialize type into database
         app.config['capnp'] = _load_capnp_schemas()
-
-        # capnp schemas used to serialize type into database
-        app.config['capnp'] = _load_capnp_schemas()
         self.app = app.test_client()
 
     def tearDown(self):
