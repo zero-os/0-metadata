@@ -29,7 +29,7 @@ from .http_client import HTTPClient
 
 
 class Client:
-    def __init__(self, base_uri="http://127.0.0.1:5000/"):
+    def __init__(self, base_uri="http://127.0.0.1:5000"):
         http_client = HTTPClient(base_uri)
         self.acl = AclService(http_client)
         self.bdomain = BdomainService(http_client)
