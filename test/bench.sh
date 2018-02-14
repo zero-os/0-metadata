@@ -2,13 +2,13 @@
 
 usage() {
     echo "Usage: $0 [URL] [rate]"
-    echo "  URL: Url to benchmark (default: http://172.17.0.2:8888)"
+    echo "  URL: Url to benchmark (default: http://127.0.0.1:5000)"
     echo " rate: request per second (default: 50)"
 }
 
 clean() {
     rm -Rf ${targets}
-    popd
+    popd >/dev/null
     echo "CLEANING"
     exit 0
 }
@@ -18,9 +18,9 @@ a=$(which vegeta)
 
 [ "$1" == "" -o "$2" == "" ] &&   usage
 
-url="${1:-http://172.17.0.2:8888}"
+url="${1:-http://127.0.0.1:5000}"
 rate="${2:-50}"
-secs="10s"
+secs="30s"
 rdir=$(dirname $0)
 targets="./targets"
 maxrecords=999
@@ -30,40 +30,27 @@ cd ${rdir}
 trap clean ERR
 
 mkdir -p ${targets}
-postfile="${targets}/POST"
-getfile="${targets}/GET"
-delfile="${targets}/DEL"
-echo -n "" > ${postfile}
-echo -n "" > ${getfile}
-echo -n "" > ${delfile}
+echo -n "" > "${targets}/POST"
+echo -n "" > "${targets}/GET"
+echo -n "" > "${targets}/LIST"
+echo -n "" > "${targets}/DEL"
 for i in $(seq 1 ${maxrecords}); do 
     body="{\"uid\": $i,\"addr\": \"home\", \"alias\": [\"jsmith\"], \"keyPub\": [\"123\"]}"
     echo $body > "./targets/jsbody.${i}"
-    echo "POST ${url}/user/${i}" >> ${postfile}
-    echo "Content-Type: application/json" >> ${postfile}
-    echo "@./targets/jsbody.${i}" >> ${postfile}
-    echo >> ${postfile}
-    echo "GET ${url}/user/${i}" >> ${getfile}
-    echo "DELETE ${url}/user/${i}" >> ${delfile}
+    echo "POST ${url}/user/${i}" >> "${targets}/POST"
+    echo "Content-Type: application/json" >> "${targets}/POST"
+    echo "@./targets/jsbody.${i}" >> "${targets}/POST"
+    echo >> "${targets}/POST"
+    echo "GET ${url}/user/${i}" >> "${targets}/GET"
+    echo "GET ${url}/user" >> "${targets}/LIST"
+    echo "DELETE ${url}/user/${i}" >> "${targets}/DEL"
 done 
 
-echo -n "POST..."
-vegeta attack -targets=${postfile} -duration=${secs} -rate=${rate} > result.POST
-cat result.POST | vegeta report -reporter=plot > plot.POST.html
-
-echo -n "GET..."
-vegeta attack -targets=${getfile} -duration=${secs}  -rate=${rate} > result.GET
-cat result.GET |vegeta report -reporter=plot > plot.GET.html
-
-echo -n "LIST..."
-echo "GET ${url}/user" | \
-vegeta attack  -duration=${secs}  -rate=${rate} > result.LIST
-cat result.LIST | vegeta report -reporter=plot > plot.LIST.html
-
-echo -n "DELETE..."
-vegeta attack -targets=${delfile} -duration=${secs}  -rate=${rate} > result.DEL
-cat result.DEL | vegeta report -reporter=plot > plot.DEL.html
-
+for i in POST GET LIST DEL; do
+    echo -n "${i}..."
+    vegeta attack -targets=${targets}/${i} -duration=${secs} -rate=${rate} > result.${i}
+    cat result.POST | vegeta report -reporter=plot > plot.${i}.html
+done
 
 echo -e "\r***** Summary Report *****    \r"
 for i in POST GET LIST DEL; do

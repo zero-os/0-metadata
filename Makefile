@@ -1,6 +1,6 @@
 
 bench:
-	/bin/bash test/bench.sh http://172.17.0.2:8888
+	/bin/bash test/bench.sh http://127.0.0.1:5000
 
 all: test
 
