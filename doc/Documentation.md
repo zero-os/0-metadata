@@ -129,6 +129,7 @@ A fileblock is defined as:
 ```
 
 > Question: Why encryption is done on a block basis ? Should the file be encrypted or not, but has no sense to have a block encrypted and the next one without ecnryption
+
 > Question: Why do we let the user manage the blocks? this smells trouble as any mistake on the user part or even on our part will screw the 0-metastor
 
 
@@ -155,10 +156,11 @@ admins:int32  list of users who administer this domain
 !addr:string  address given by the digital.me system, is for the master of this blockchain
 signature:string  signature with priv key of author of md5(id+moddate+author+name+signature+owners(sorted)+addr+signature previous message)
 ```
-> Why name needs to be unique ? uid aready are, maybe uid is not needed
+> Question: Why name needs to be unique ? uid aready are, maybe uid is not needed
 
-/bdomain: {std_root_list}
-/bdomain'/{id}': {std_id_get_post_del: {descr: id=int} }
+**/bdomain**
+
+**/bdomain/{id}**
 
 
 ## Bobject
@@ -176,8 +178,9 @@ signature:string  signature with priv key of author of md5(id+domain+moddate+aut
 !digitalmeUrl:string  digital.me url
 ```
 
-/bobject: {std_root_list}
-/bobject'/{id}': {std_id_get_post_del: {descr: id=int} }
+**/bobject**
+
+**/bobject/{id}**
 
 
 ## Link_bobject
@@ -206,8 +209,9 @@ aci:aci[]  list of access control items
 hash:string  md5 hash of concatenation of ACI hashes, used to find this acl to avoid duplicates
 ```
 
-/acl: {std_root_list}
-/acl'/{id}': {std_id_get_post_del: {descr: id=int} }
+**/acl**
+
+**/acl/{id}**
 
 
 ## Aci
