@@ -36,7 +36,66 @@ ie: python3 server.py 0.0.0.0 5000 localhost 6379
 
 Additional documentation can be found on [DOC](https://github.com/zero-os/0-metadata/doc/Documentation.md)
 
+## Example
+
+Given a 0-metadata server started on vfs.mycompany.com:5000 we can 
+
+* Python3, this code creates a directory and stores it 
+```python
+#! /usr/bin/python3
+
+from client import Client
+from client.dir import dir as Dir
+from client.posix import posix as PosixClass
+
+# instanciate client
+cl = Client(base_uri="http://vfs.mycompany.com:5000")
+
+# create dir object
+my_dir = Dir.create(
+    name="home", 
+    subdirs=[], 
+    uid=1, 
+    uidParent=0, 
+    size=1, 
+    acl=1,
+    bobjectItems=[],
+    files=[],
+    linkItems=[],
+    metadataItems=[],
+    specialItems=[],
+    secret="",
+    posix=PosixClass.create(mode=777, uname="root", gname="root"))
+
+data, resp = cl.dir.updateDir(data=my_dir.as_json(), id=str(my_dir.uid))
+if resp.status_code != 200:
+    print("Returns error: ", resp.status_code)
+    exit
+
+print("Success, dir stored: ", data)
+```
 
 
-
-
+* Shell Access, this bash code retrieves the directory previously created, you can obtain the same result just using your browser and going to "http://vfs.mycompany.com:5000/dir/1"
+```json
+$ GET  "http://vfs.mycompany.com:5000/dir/1" 
+{
+  "acl": 1, 
+  "bobjectItems": [], 
+  "files": [], 
+  "linkItems": [], 
+  "metadataItems": [], 
+  "name": "home", 
+  "posix": {
+    "gname": "root", 
+    "mode": 777, 
+    "uname": "root"
+  }, 
+  "secret": "", 
+  "size": 1, 
+  "specialItems": [], 
+  "subdirs": [], 
+  "uid": 1, 
+  "uidParent": 0
+}
+```
